@@ -2,7 +2,7 @@
 **Setup** [Let's Encrypt](https://letsencrypt.org/) ACME client [dehydrated](https://github.com/lukas2511/dehydrated) with a bunch of [dns-01 hooks](https://github.com/lukas2511/dehydrated/wiki/Examples-for-DNS-01-hooks) on Debian/Ubuntu Linux servers, **automatically** sign/renew **certificate**s and **deploy** them to other Linux or Windows proxy-/webservers.
 
 * [supported dns providers](#dns-providers)
-* [supported proxy-/webservers](#proxy-orwebservers)
+* [supported proxy-/webservers](#proxy--or-webservers)
 
 ## Requirements
 * `git` for setup Let's Encrypt ACME client on Debian/Ubuntu Linux servers
