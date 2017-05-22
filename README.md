@@ -184,6 +184,11 @@ None specific variables. For more information about what happen during deploymen
 
 ##### Sophos UTM
 ```
+[ssh_connection]
+transfer_method = scp
+```
+Sophos UTM doesn't support the default Ansible transfer method `sftp`, so change the transfer method in `ansible.cfg` to `scp` instead.
+```
 le_deploy_certificate:
     example_com:
         domain: "example.com"                   # required
