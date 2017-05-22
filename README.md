@@ -123,7 +123,7 @@ Note: When you optionally wish to force all certificates to be deployed to all w
 le_deploy2_webserver: "nginx"
 ```
 Declare to which webserver signed/renewed certificates should be deployed to by default.
-*Note:* use same name as listed in `le_deploy2.webservers`
+*Note:* use same name as listed in `le_deploy2_webservers`
 
 ```
 le_deploy_certificate:

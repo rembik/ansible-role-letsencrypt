@@ -89,7 +89,7 @@ le_deploy2_webservers:
   - "ms_exchange"
   - "sophos_utm"
 # default webserver for certificate deployment
-# NOTE: use same name as listed in le_deploy2.webservers
+# NOTE: use same name as listed in le_deploy2_webservers
 le_deploy2_webserver: "nginx"
 # localhost
 # ------------------------------------------------
