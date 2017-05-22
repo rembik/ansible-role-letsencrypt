@@ -105,3 +105,8 @@ le_deploy2_ms_iis_ip: "*"
 le_deploy2_ms_iis_port: 443
 le_deploy2_ms_iis_host_header: ""
 le_deploy2_ms_iis_sni: false
+
+# automation certification and deployment
+le_cron_playbook_filename: "letsencrypt.yml"
+le_cron_vault_password_file: "{{ playbook_dir }}/.vault"
+le_cron_inventory_groups:

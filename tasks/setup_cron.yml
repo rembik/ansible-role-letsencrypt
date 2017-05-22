@@ -36,6 +36,6 @@
         hour: 22
         user: root
         cron_file: letsencrypt
-        job: ". {{ playbook_dir }}/.cron/letsencrypt_{{ le_setup_cron_loop }}; /usr/bin/ansible-playbook {{ playbook_dir }}/letsencrypt.yml -i {{ inventory_file }} --vault-password-file {{ playbook_dir }}/.vault -l {{ le_setup_cron_loop }} -t certificate,deploy > /dev/null 2>&1"
+        job: ". {{ playbook_dir }}/.cron/letsencrypt_{{ le_setup_cron_loop }}; /usr/bin/ansible-playbook {{ playbook_dir }}/{{ le_cron_playbook_filename }} -i {{ inventory_file }} --vault-password-file {{ le_cron_vault_password_file }} -l {{ le_setup_cron_loop }} -t certificate,deploy > /dev/null 2>&1"
       delegate_to: 127.0.0.1
   when: le_setup_cron_loop in group_names
