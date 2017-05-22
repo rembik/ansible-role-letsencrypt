@@ -2,7 +2,7 @@
 **Setup** [Let's Encrypt](https://letsencrypt.org/) ACME client [dehydrated](https://github.com/lukas2511/dehydrated) with a bunch of [dns-01 hooks](https://github.com/lukas2511/dehydrated/wiki/Examples-for-DNS-01-hooks) on Debian/Ubuntu Linux servers, **automatically** sign/renew **certificate**s and **deploy** them to other Linux or Windows proxy-/webservers.
 
 * [supported dns providers](#dns-providers)
-* [supported proxy-/webservers](#proxy-webservers)
+* [supported proxy-/webservers](#proxy-orwebservers)
 
 ## Requirements
 * `git` for setup Let's Encrypt ACME client on Debian/Ubuntu Linux servers
@@ -130,14 +130,14 @@ le_deploy_certificate:
     example_com:
         domain: "example.com"                   # required
         webserver:                              # optional, overwrites default for specific domain
-        force:                                  # optional, when set to true the certificate will always be deployed 
+        force:                                  # optional, set true to always deploy certificate 
 le_deploy_certificates:                         # required dictionary list for deployment process in role  
     - "{{ le_deploy_certificate.example_com }}"
 ```
 These dictionaries are required for the deployment process and should be declared in the `host_vars` inventory file of proxy-/webservers where the certificates will be deployed to.
 Proxy-/webserver specific variables for this deployment dictionaries are shown under the specific proxy-/webserver in this section. 
 
-#### Proxy-/Webservers
+#### Proxy- or Webservers
 ```
 le_deploy2_webservers:
   - "nginx"
@@ -190,7 +190,7 @@ le_deploy_certificate:
         ref:                                    # required
         ref_ca:                                 # required
 ```
-For more information about what happen during deployment and how to get this variables see [update-utm-certificate](https://github.com/mbunkus/utm-update-certificate).
+For more information about what happen during deployment see [utm-update-certificate](https://github.com/mbunkus/utm-update-certificate).
 
 ### Automation
 This role provided one optionally automation solution. For scheduled plays it creates cronjobs with `cron` and for rotating log files of the plays it uses `logrotate`.
