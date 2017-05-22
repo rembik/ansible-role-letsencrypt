@@ -1,0 +1,38 @@
+---
+
+- name: "++++++++++ install and config dehydrated and all challenge hooks ++++++++++"
+  include: setup.yml
+  static: no
+  become: true
+  when:
+    - le_certificates is defined
+    - le_deploy == false
+    - ansible_os_family == "Debian"
+  tags:
+    - setup
+
+- name: "++++++++++ sign/renew non-existant/changed/expiring certificates ++++++++++"
+  include: certificate.yml
+  static: no
+  become: true
+  when:
+    - le_certificates is defined
+    - le_deploy == false
+    - ansible_os_family == "Debian"
+  with_items:
+    - "{{ le_certificates }}"
+  loop_control:
+      loop_var: le_certificate_loop
+  tags:
+    - certificate
+
+- name: "++++++++++ deploy signed/renewed certificates to other webservers +++++++++"
+  include: deploy.yml
+  static: no
+  when: (le_deploy == true or le_deploy == "force") and le_deploy_certificates is defined
+  with_items:
+    - "{{ le_deploy_certificates }}"
+  loop_control:
+    loop_var: le_deploy_certificate_loop
+  tags:
+    - deploy

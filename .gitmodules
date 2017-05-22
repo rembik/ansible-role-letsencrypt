@@ -1,0 +1,6 @@
+[submodule "files/deploy2/ms_iis"]
+	path = files/deploy2/ms_iis
+	url = https://github.com/rembik/update-iis-certificate.git
+[submodule "files/deploy2/ms_exchange"]
+	path = files/deploy2/ms_exchange
+	url = https://github.com/rembik/update-exchange-certificate.git

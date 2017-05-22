@@ -1,0 +1,26 @@
+---
+
+- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : NGINX - create certificates directory {{ le_deploy_certificate_loop.certs_dir| default(le_deploy2_nginx_certs_dir) }}/{{ le_deploy_certificate_loop.domain }}"
+  become: yes
+  file:
+    path: "{{ le_deploy_certificate_loop.certs_dir| default(le_deploy2_nginx_certs_dir) }}/{{ le_deploy_certificate_loop.domain }}"
+    state: directory
+    mode: 0700
+
+- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : NGINX - copy certificate files to {{ le_deploy_certificate_loop.certs_dir| default(le_deploy2_nginx_certs_dir) }}/{{ le_deploy_certificate_loop.domain }}"
+  become: yes
+  copy:
+    src: "{{ le_deploy2_local_certs_dir }}/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
+    dest: "{{ le_deploy_certificate_loop.certs_dir| default(le_deploy2_nginx_certs_dir) }}/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
+    mode: 0400
+  with_items:
+    - "cert.pem"
+    - "chain.pem"
+    - "fullchain.pem"
+    - "privkey.pem"
+  register: le_deploy_certificate_loop_state
+
+- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : NGINX - reload webserver configuration"
+  become: yes
+  command: "{{ le_deploy2_nginx_reload_cmd }}"
+  when: le_deploy_certificate_loop_state.results[0].changed

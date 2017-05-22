@@ -1,0 +1,41 @@
+---
+# EXAMPLE usage from letsencrypt.yml playbook outside this role:
+#- hosts: letsencrypt
+#  vars:
+#    le_cron_inventory_groups:
+#      - "your_inventory_group"
+#  roles:
+#    - letsencrypt
+#  post_tasks:
+#    - name: "letsencrypt : SETUP : config letsencrypt cronjobs (including mail_error) for inventory groups"
+#      include: "roles/letsencrypt/tasks/setup_cron.yml"
+#      with_items:
+#        - "{{ le_cron_inventory_groups }}"
+#      loop_control:
+#        loop_var: le_setup_cron_loop
+#      tags:
+#        - setup
+
+- block:
+    - name: "letsencrypt : SETUP cron : [{{ le_setup_cron_loop }}] - create directory {{ playbook_dir }}/.cron"
+      file:
+        path: "{{ playbook_dir }}/.cron"
+        state: directory
+    - name: "letsencrypt : SETUP cron : [{{ le_setup_cron_loop }}] - config cron environment"
+      template:
+        src: "roles/letsencrypt/templates/setup/localhost/cron_env.j2"
+        dest: "{{ playbook_dir }}/.cron/letsencrypt_{{ le_setup_cron_loop }}"
+        owner: root
+        group: root
+        mode: 0744
+      delegate_to: 127.0.0.1
+    - name: "letsencrypt : SETUP cron : [{{ le_setup_cron_loop }}] - config cronjob"
+      cron:
+        name: "letsencrypt [{{ le_setup_cron_loop }}]"
+        minute: 0
+        hour: 22
+        user: root
+        cron_file: letsencrypt
+        job: ". {{ playbook_dir }}/.cron/letsencrypt_{{ le_setup_cron_loop }}; /usr/bin/ansible-playbook {{ playbook_dir }}/letsencrypt.yml -i {{ inventory_file }} --vault-password-file {{ playbook_dir }}/.vault -l {{ le_setup_cron_loop }} -t certificate,deploy > /dev/null 2>&1"
+      delegate_to: 127.0.0.1
+  when: le_setup_cron_loop in group_names

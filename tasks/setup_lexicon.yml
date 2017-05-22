@@ -1,0 +1,36 @@
+---
+# install and config lexicon hook to challenge dns-01 for many dns providers (see https://github.com/AnalogJ/lexicon)
+- name: "SETUP Lexicon : install/update dependent system packages"
+  apt:
+    name: "{{ item }}"
+    state: latest
+    update_cache: yes
+  with_items:
+    - "build-essential"
+    - "curl"
+    - "python"
+    - "python-dev"
+    - "python-pip"
+    - "libffi-dev"
+    - "libssl-dev"
+
+- name: "SETUP Lexicon : install/update dependent python libraries"
+  pip:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - "requests[security]"
+    - "dns-lexicon"
+    - "dns-lexicon[route53]"
+    - "dns-lexicon[transip]"
+
+- name: "SETUP Lexicon : create lexicon hook directory {{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}"
+  file:
+    path: "{{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}"
+    state: directory
+
+- name: "SETUP Lexicon : copy hook script to {{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}/hook.sh"
+  copy:
+    src: "setup/lexicon/hook.sh"
+    dest: "{{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}/hook.sh"
+    mode: 0755

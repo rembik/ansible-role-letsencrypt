@@ -1,0 +1,107 @@
+---
+# default lower priority variables for this role
+
+
+# http webserver - dehydrated http-01 hook
+# --------------------------------------------------
+# supported public proxy- or webservers for your http-01 challenge
+# NOTE: all your domains must point on inventory [letsencrypt] server
+# currently not supported - planned [nginx, apache_http]
+le_http_webservers:
+  - "nginx"
+  - "apache_http"
+# default webserver for your http-01 challenge
+# use same name as listed in le_http_webservers
+le_http_webserver:
+
+
+# dns provider - dehydrated dns-01 hook
+# --------------------------------------------------
+# supported dns providers for your dns-01 challenge
+le_dns_providers:
+  - "lexicon"
+  - "hetzner"
+# default dns provider for your dns-01 challenge
+# NOTE: use same name as listed in le_dns_providers, lexicon excluded.
+#       Instead of lexicon use same name as in le_dns_lexicon_providers.
+le_dns_provider: "cloudflare"
+# Hetzner Robot
+# ------------------------------------------------
+le_dns_hetzner_auth_username:
+le_dns_hetzner_auth_password:
+le_dns_hetzner_language: "de"
+le_dns_hetzner_dns_servers: "\"213.239.242.238\", \"213.133.105.6\", \"193.47.99.3\""
+le_dns_hetzner_debug: false
+le_dns_hetzner_hook_file: "hook.py"
+# Lexicon
+# ------------------------------------------------
+le_dns_lexicon_providers:
+  - "cloudflare"
+  - "cloudxns"
+  - "digitalocean"
+  - "dnsimple"
+  - "dnsmadeeasy"
+  - "dnspark"
+  - "dnspod"
+  - "easydns"
+  - "luadns"
+  - "namesilo"
+  - "nsone"
+  - "pointhq"
+  - "rage4"
+  - "route53"
+  - "vultr"
+  - "yandex"
+  - "zonomi"
+le_dns_lexicon_hook_file: "hook.sh"
+le_dns_lexicon_auth_username:
+le_dns_lexicon_auth_password:
+le_dns_lexicon_auth_token:
+
+# dehydrated
+# --------------------------------------------------
+le_dehydrated_ca: "https://acme-staging.api.letsencrypt.org/directory"
+le_dehydrated_ca_terms: "https://acme-staging.api.letsencrypt.org/terms"
+# default letsencrypt challenge type [http-01, dns-01]
+# currently only dns-01 is supported
+le_dehydrated_challenge_type: "dns-01"
+# default contact email
+le_dehydrated_contact_email:
+le_dehydrated_base_dir: "/etc/dehydrated"
+le_dehydrated_certs_dir: "{{ le_dehydrated_base_dir }}/certs"
+le_dehydrated_accounts_dir: "{{ le_dehydrated_base_dir }}/accounts"
+le_dehydrated_hooks_dir: "{{ le_dehydrated_base_dir }}/hooks"
+# default hook script for your dns-01 challenge
+le_dehydrated_hook: "{{ le_dehydrated_hooks_dir }}/lexicon/{{ le_dns_lexicon_hook_file }}"
+# password for generating PKCS12 (.pfx) certificate file
+le_dehydrated_pkcs12_password: ""
+
+
+# certificate deployment
+# --------------------------------------------------
+# deployment flag [false,true,'force']: use in ansible-playbook to switch between setup/certificate [false] and deploy [true] task in this role
+# NOTE: When you optionally wish to force all certificates to be deployed to all webservers use ['force'], otherwise [true] only signed/renewed certificates will deploy.
+le_deploy: false
+# supported webservers for certificate deployment
+le_deploy2_webservers:
+  - "nginx"
+  - "ms_iis"
+  - "ms_exchange"
+  - "sophos_utm"
+# default webserver for certificate deployment
+# NOTE: use same name as listed in le_deploy2.webservers
+le_deploy2_webserver: "nginx"
+# localhost
+# ------------------------------------------------
+le_deploy2_local_certs_dir: "/opt/letsencrypt/certs"
+# nginx
+# ------------------------------------------------
+le_deploy2_nginx_certs_dir: "/etc/nginx/certs"
+le_deploy2_nginx_reload_cmd: "/etc/init.d/nginx reload"
+# MS IIS
+# ------------------------------------------------
+le_deploy2_ms_iis_site_name: "Default Web Site"
+le_deploy2_ms_iis_ip: "*"
+le_deploy2_ms_iis_port: 443
+le_deploy2_ms_iis_host_header: ""
+le_deploy2_ms_iis_sni: false

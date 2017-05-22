@@ -1,0 +1,61 @@
+---
+
+- name: "SETUP dehydrated : create dependent directories"
+  file:
+    path: "{{ item }}"
+    state: directory
+  with_items:
+    - "{{ le_dehydrated_base_dir }}"
+    - "{{ le_dehydrated_certs_dir }}"
+    - "{{ le_dehydrated_accounts_dir }}"
+    - "{{ le_dehydrated_hooks_dir }}"
+
+- name: "SETUP dehydrated : checkout git repo"
+  git:
+    repo: "https://github.com/lukas2511/dehydrated.git"
+    dest: "/opt/letsencrypt/dehydrated"
+    version: master
+
+- name: "SETUP dehydrated : copy default config to {{ le_dehydrated_base_dir }}"
+  copy:
+    remote_src: True
+    src: "/opt/letsencrypt/dehydrated/docs/examples/config"
+    dest: "{{ le_dehydrated_base_dir }}/config"
+
+- name: "SETUP dehydrated : set config variables 'key=value'"
+  ini_file:
+    dest: "{{ le_dehydrated_base_dir }}/config"
+    section:
+    option: "{{ item.key }}"
+    value: "{{ item.value }}"
+    no_extra_spaces: yes
+  with_items:
+    - { key: "CA", value: "{{ le_dehydrated_ca }}"}
+    - { key: "CA_TERMS", value: "{{ le_dehydrated_ca_terms }}"}
+    - { key: "CHALLENGETYPE", value: "{{ le_dehydrated_challenge_type }}"}
+    - { key: "BASEDIR", value: "{{ le_dehydrated_base_dir }}"}
+    - { key: "CERTDIR", value: "{{ le_dehydrated_certs_dir }}"}
+    - { key: "ACCOUNTDIR", value: "{{ le_dehydrated_accounts_dir }}"}
+    - { key: "CONTACT_EMAIL", value: "{{ le_dehydrated_contact_email }}"}
+    - { key: "HOOK", value: "{{ le_dehydrated_hook }}"}
+  when:
+    - item.value is defined
+    - item.value != ""
+    - item.value is not none
+
+- name: "SETUP dehydrated : create domains.txt in {{ le_dehydrated_base_dir }}"
+  file:
+    path: "{{ le_dehydrated_base_dir }}/domains.txt"
+    owner: root
+    group: root
+    mode: 0644
+    state: touch
+
+- name: "SETUP dehydrated : create symlink to /opt/dehydrated/dehydrated in /usr/local/bin/"
+  file:
+    src: /opt/letsencrypt/dehydrated/dehydrated
+    dest: /usr/local/bin/dehydrated
+    state: link
+
+- name: "SETUP dehydrated : register account key and accept CAs terms of service"
+  command: "dehydrated --register --accept-terms"

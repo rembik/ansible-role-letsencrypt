@@ -1,0 +1,55 @@
+---
+
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - fetch current certificate files to {{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}"
+  fetch:
+    src: "{{ le_dehydrated_certs_dir }}/{{ le_certificate_loop.domain }}/{{ item }}"
+    dest: "{{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}/"
+    flat: yes
+    mode: 0400
+  with_items:
+    - "cert.csr"
+    - "cert.pem"
+    - "chain.pem"
+    - "fullchain.pem"
+    - "privkey.pem"
+  register: le_certificate_loop_state
+  delegate_to: 127.0.0.1
+
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - when certificate is signed/renewed:"
+  block:
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - generate new [pkcs12].pfx certificate file"
+      command: "openssl pkcs12 -export -out pkcs12.pfx -in fullchain.pem -inkey privkey.pem -CAfile chain.pem -name \"Let's Encrypt {{ le_certificate_loop.domain }} ({{ ansible_date_time.date }})\" -password pass:{{ le_dehydrated_pkcs12_password }}"
+      args:
+        chdir: "{{ le_dehydrated_certs_dir }}/{{ le_certificate_loop.domain }}"
+      register: le_certificate_loop_generate_pkcs12
+
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - fetch new pkcs12 certificate file to {{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}"
+      fetch:
+        src: "{{ le_dehydrated_certs_dir }}/{{ le_certificate_loop.domain }}/{{ item }}"
+        dest: "{{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}/"
+        flat: yes
+        mode: 0400
+      with_items:
+        - "pkcs12.pfx"
+      when:
+        - le_certificate_loop_generate_pkcs12|success
+      delegate_to: 127.0.0.1
+
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - set certificate deployment state to 'deploy'"
+      set_fact:
+        le_certificate_loop_flag: "deploy"
+  when: le_certificate_loop_state.results[1].changed
+
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - set certificate deployment state to 'unchanged'"
+  set_fact:
+    le_certificate_loop_flag: "unchanged"
+  when: le_certificate_loop_state.results[1].changed == false
+
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - save certificate state into {{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}/.flag"
+  template:
+    src: "deploy2/localhost/.flag.j2"
+    dest: "{{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}/.flag"
+    owner: root
+    group: root
+    mode: 0600
+  delegate_to: 127.0.0.1

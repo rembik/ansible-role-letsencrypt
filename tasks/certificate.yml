@@ -1,0 +1,35 @@
+---
+# sign/renew non-existant/changed/expiring certificates
+
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : get challenge type and dns provider"
+  set_fact:
+    le_certificate_loop_challenge_type: "{{ le_certificate_loop.challenge| default(le_dehydrated_challenge_type) }}"
+    le_certificate_loop_dns_provider: "{{ le_certificate_loop.dns_provider | default(le_dns_provider) }}"
+
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : when challenge type is 'dns-01':"
+  block:
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DNS-01 - certificate with LEXICON hook:"
+      include: "certificate_lexicon.yml"
+      static: no
+      when:
+        - le_certificate_loop_dns_provider in le_dns_lexicon_providers
+
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DNS-01 - certificate with {{ le_certificate_loop_dns_provider|upper }} hook:"
+      include: "certificate_{{ le_certificate_loop_dns_provider | default(le_dns_provider) }}.yml"
+      static: no
+      when:
+        - le_certificate_loop_dns_provider not in le_dns_lexicon_providers
+  when:
+    - le_certificate_loop_challenge_type == "dns-01"
+
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : certificate with HTTP-01 webserver:"
+  block:
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HTTP-01 - sign/renew non-existant/changed/expiring certificate"
+      shell: "/opt/letsencrypt/dehydrated/dehydrated -c -d '{{ le_certificate_loop.domain }} {{ le_certificate_loop.altnames | default('') }}' -t 'http-01'"
+      async: 600
+      poll: 5
+  when:
+    - le_certificate_loop_challenge_type == "http-01"
+
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : save certificate and it deployment state on LOCALHOST:"
+  include: "deploy2_localhost.yml"

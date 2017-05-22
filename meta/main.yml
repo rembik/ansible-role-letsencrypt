@@ -1,0 +1,20 @@
+---
+
+dependencies: []
+
+galaxy_info:
+  author: rembik
+  description: Lets'Encrypt LAN
+  license: "license (BSD, MIT)"
+  min_ansible_version: 2.3
+  platforms:
+    - name: Ubuntu
+      versions:
+      - all
+    - name: Debian
+      versions:
+      - all
+  galaxy_tags:
+    - letsencrypt
+    - certificate
+    - web

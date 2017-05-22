@@ -1,0 +1,10 @@
+---
+# deploy signed/renewed certificates to other webservers
+
+- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : load certificate deployment state from local {{ le_deploy2_local_certs_dir }}/{{ le_deploy_certificate_loop.domain }}/.flag"
+  include_vars: "{{ le_deploy2_local_certs_dir }}/{{ le_deploy_certificate_loop.domain }}/.flag"
+
+- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : deploy to specific webserver '{{ le_deploy_certificate_loop.webserver | default(le_deploy2_webserver) }}':"
+  include: "deploy2_{{ le_deploy_certificate_loop.webserver | default(le_deploy2_webserver) }}.yml"
+  static: no
+  when: le_deploy_certificate_flag == "deploy" or le_deploy_certificate_loop.force|default(false) == true or le_deploy == "force"

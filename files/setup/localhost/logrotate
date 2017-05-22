@@ -1,0 +1,9 @@
+/var/log/ansible/hosts/*.log {
+        daily
+        missingok
+        rotate 12
+        compress
+        delaycompress
+        notifempty
+        create 600 root root
+}

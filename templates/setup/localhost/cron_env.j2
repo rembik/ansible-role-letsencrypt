@@ -1,0 +1,15 @@
+export ERR_MAIL_HOST={% if err_mail_host is defined and err_mail_host != "" and err_mail_host is not none %}'{{ err_mail_host }}'{% endif %}
+
+export ERR_MAIL_PORT={% if err_mail_port is defined and err_mail_port != "" and err_mail_port is not none %}'{{ err_mail_port }}'{% endif %}
+
+export ERR_MAIL_USERNAME={% if err_mail_username is defined and err_mail_username != "" and err_mail_username is not none %}'{{ err_mail_username }}'{% endif %}
+
+export ERR_MAIL_PASSWORD={% if err_mail_password is defined and err_mail_password != "" and err_mail_password is not none %}'{{ err_mail_password }}'{% endif %}
+
+export ERR_MAIL_TO={% if err_mail_to is defined and err_mail_to != "" and err_mail_to is not none %}'{{ err_mail_to }}'{% endif %}
+
+export ERR_MAIL_CC={% if err_mail_cc is defined and err_mail_cc != "" and err_mail_cc is not none %}'{{ err_mail_cc }}'{% endif %}
+
+export ERR_MAIL_BCC={% if err_mail_bcc is defined and err_mail_bcc != "" and err_mail_bcc is not none %}'{{ err_mail_bcc }}'{% endif %}
+
+export ANSIBLE_CONFIG={{ playbook_dir }}
