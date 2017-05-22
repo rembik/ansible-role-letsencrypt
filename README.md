@@ -3,7 +3,7 @@
 **Setup** [Let's Encrypt](https://letsencrypt.org/) ACME client [dehydrated](https://github.com/lukas2511/dehydrated) with a bunch of [dns-01 hooks](https://github.com/lukas2511/dehydrated/wiki/Examples-for-DNS-01-hooks) on Debian/Ubuntu Linux servers, **automatically sign/renew** certificates and **deploy** them to other Linux or Windows proxy-/webservers.
 
 * [supported dns providers](#dns-providers)
-* [supported proxy-/webservers](#proxy--webservers)
+* [supported proxy-/webservers](#proxy-webservers)
 
 ## Requirements
 
@@ -16,6 +16,10 @@
 Important variables are listed below, along with default values (see `vars/main.yml`). For all other default variables see `default/main.yml`.
 Recommended, **declare this variables** in `host_vars` and `group_vars` inventory files!
 
+* [Setup](#setup)
+* [Certificate](#certificate)
+* [Deployment](#deployment)
+
 ### Setup
 #### dehydrated
 
@@ -23,7 +27,7 @@ Recommended, **declare this variables** in `host_vars` and `group_vars` inventor
 le_dehydrated_ca: "https://acme-staging.api.letsencrypt.org/directory"
 le_dehydrated_ca_terms: "https://acme-staging.api.letsencrypt.org/terms"
 ```
-**Overwrite!** Switch certificate authority variables for production inventory from default *acme-staging* servers to *acme-v01* servers.
+***Overwrite!*** Switch certificate authority variables for production inventory from default *acme-staging* servers to *acme-v01* servers.
 
 ```
 le_dehydrated_hook: "{{ le_dehydrated_hooks_dir }}/lexicon/{{ le_dns_lexicon_hook_file }}"
@@ -33,7 +37,7 @@ The default hook script for your dns-01 challenge.
 ```
 le_dehydrated_contact_email:
 ```
-**Overwrite!** default contact email.
+***Overwrite!*** default contact email.
 
 ```
 le_dehydrated_pkcs12_password: ''
@@ -84,9 +88,9 @@ le_dns_lexicon_auth_username:
 le_dns_lexicon_auth_password:
 le_dns_lexicon_auth_token:
 ```
-**Overwrite!** Default credentials for chosen default dns provider (see [lexicon](https://github.com/AnalogJ/lexicon#authentication) and [dehydrated-hetzner-hook](https://github.com/rembik/dehydrated-hetzner-hook#configuration) docs).
+***Overwrite!*** Default credentials for chosen default dns provider (see [lexicon](https://github.com/AnalogJ/lexicon#authentication) and [dehydrated-hetzner-hook](https://github.com/rembik/dehydrated-hetzner-hook#configuration) docs).
 
-##### Hetzner Robot
+#### Hetzner Robot
 ```
 le_dns_hetzner_language: "de"
 le_dns_hetzner_dns_servers: "\"213.239.242.238\", \"213.133.105.6\", \"193.47.99.3\""
@@ -113,6 +117,22 @@ Declare to which webserver signed/renewed certificates should be deployed to by 
 
 #### Proxy-/Webservers
 
+```
+le_deploy2_webservers:
+  - "nginx"
+  - "ms_iis"
+  - "ms_exchange"
+  - "sophos_utm"
+```
+
+#### nginx
+
+#### Microsoft IIS
+
+#### Microsoft Exchange
+
+#### Sophos UTM
+
 ### Ansible Callbacks
 This role comes with two customized `mail_error` and `log_plays_rotatable` callback plugins. The `log_plays_rotatable` callback logs all playbooks per host and enable rotating the log files.
 `mail_error` mails to interested party when the automated playbook fails. These parties can be differentiated per inventory group. 
@@ -134,7 +154,7 @@ None.
 
 ## Usage
 
-#### Example Playbook
+#### Example Playbook `letsencrypt.yml`
 ```
 - hosts: letsencrypt
   vars:
