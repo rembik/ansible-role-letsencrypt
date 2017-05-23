@@ -195,7 +195,7 @@ le_deploy_certificate:
         ref:                                    # required
         ref_ca:                                 # required
 ```
-For more information about what happen during deployment see [utm-update-certificate](https://github.com/mbunkus/utm-update-certificate).
+For more information about what happen during deployment see [utm-update-certificate](https://github.com/mbunkus/utm-update-certificate). For detail instructions about how to get required certificate references `ref` and `ref_ca` see [ansible-letsencrypt-example Wiki](https://github.com/rembik/ansible-letsencrypt-example/wiki/Configure-Sophos-UTM#get-certificate-references)
 
 ### Automation
 This role provided one optionally automation solution. For scheduled plays it creates cronjobs with `cron` and for rotating log files of the plays it uses `logrotate`.
@@ -270,7 +270,6 @@ $ cd /path/to/playbook
 $ ansible-playbook letsencrypt.yml --vault-password-file .vault
 ```
 After an initial manuel play the automated certificate cycle for your private network is finished.
-Note: When deploying to **[Sophos UTM](#sophos-utm)** better split the initial play with `-t setup,certificate` and `-t deploy`
 
 ## License
 MIT / BSD
