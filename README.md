@@ -248,7 +248,7 @@ This role provides `setup`,`certificate` and `deploy` Ansible Tags to split the 
             loop_var: le_setup_cron_loop
         - name: "Ansible Playbook : SETUP : logrotate - config rotation"
           copy:
-            src: roles/letsencrypt/files/localhost/logrotate
+            src: roles/letsencrypt/files/setup/localhost/logrotate
             dest: /etc/logrotate.d/ansible_log_plays
             owner: root
             group: root
