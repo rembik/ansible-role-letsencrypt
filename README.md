@@ -235,7 +235,7 @@ This role provides `setup`,`certificate` and `deploy` Ansible Tags to split the 
 - hosts: letsencrypt
   vars:
     le_cron_inventory_groups:
-      - "network_environment"
+      - "your_inventory_group"
   roles:
     - letsencrypt
   post_tasks:
