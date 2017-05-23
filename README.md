@@ -269,7 +269,7 @@ $ sudo su
 $ cd /path/to/playbook
 $ ansible-playbook letsencrypt.yml --vault-password-file .vault
 ```
-After an initial manuel play the automated certificate cycle for your private network is finished.
+After an initial manuel play the automated certificate cycle for your private network is finished. Note: When deploying to **[Sophos UTM](#sophos-utm)** better split the initial play with `-t setup,certificate` and `-t deploy` (see [Wiki](https://github.com/rembik/ansible-letsencrypt-example/wiki/Configure-Sophos-UTM)).
 
 ## License
 MIT / BSD
