@@ -1,14 +1,14 @@
 ---
 
 - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : NGINX - create certificates directory {{ le_deploy_certificate_loop.certs_dir| default(le_deploy2_nginx_certs_dir) }}/{{ le_deploy_certificate_loop.domain }}"
-  become: yes
+  become: true
   file:
     path: "{{ le_deploy_certificate_loop.certs_dir| default(le_deploy2_nginx_certs_dir) }}/{{ le_deploy_certificate_loop.domain }}"
     state: directory
     mode: 0700
 
 - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : NGINX - copy certificate files to {{ le_deploy_certificate_loop.certs_dir| default(le_deploy2_nginx_certs_dir) }}/{{ le_deploy_certificate_loop.domain }}"
-  become: yes
+  become: true
   copy:
     src: "{{ le_deploy2_local_certs_dir }}/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
     dest: "{{ le_deploy_certificate_loop.certs_dir| default(le_deploy2_nginx_certs_dir) }}/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
@@ -21,6 +21,6 @@
   register: le_deploy_certificate_loop_state
 
 - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : NGINX - reload webserver configuration"
-  become: yes
+  become: true
   command: "{{ le_deploy2_nginx_reload_cmd }}"
   when: le_deploy_certificate_loop_state.results[0].changed
