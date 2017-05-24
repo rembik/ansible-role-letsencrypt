@@ -6,8 +6,8 @@
 
 ## Requirements
 * `git` for setup Let's Encrypt ACME client on Debian/Ubuntu Linux servers
-* optionally, `cron` for automatic certification and deployment on the Ansible management server (Linux server)
-* optionally, `logrotate` for rotating the playbook logs on the Ansible management server (Linux server)
+* optionally, `cron` for automatic certification and deployment on the Ansible Control Machine (Linux server)
+* optionally, `logrotate` for rotating the playbook logs on the Ansible Control Machine (Linux server)
 
 ## Role Variables
 Important variables are listed below, along with default values (see `vars/main.yml`). For all other default variables see `default/main.yml`.
