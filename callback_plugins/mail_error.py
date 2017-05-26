@@ -39,6 +39,8 @@ class CallbackModule(CallbackBase):
         ERR_MAIL_PORT           (optional): mail server port. Default: 25
         ERR_MAIL_USERNAME       (optional): mail server username
         ERR_MAIL_PASSWORD       (optional): mail server password
+        ERR_MAIL_FROM           (optional): email-adress the mail is being sent from and
+                                            which may contain address and phrase portions.
         ERR_MAIL_TO             (required): email-address(es) the mail is being sent to.
                                             This is a comma-separated list, which may contain 
                                             address and phrase portions.
@@ -62,16 +64,12 @@ class CallbackModule(CallbackBase):
         self.playbook_failure = False
 
     def mail(self, sender=None, subject=None, body=None):
-    
-        if self.callback_retry > 3:
-            self.disabled = True
-            self._display.warning('Error-mail Callback disabled for this '
-                                  'run! Check provided environment variables.')
         
         host = os.getenv('ERR_MAIL_HOST', 'localhost')
         port = os.getenv('ERR_MAIL_PORT', 25)
         username = os.getenv('ERR_MAIL_USERNAME')
         password = os.getenv('ERR_MAIL_PASSWORD')
+        sender = os.getenv('ERR_MAIL_FROM','Ansible Notification <error@localhost>')
         to = os.getenv('ERR_MAIL_TO')
         cc = os.getenv('ERR_MAIL_CC')
         bcc = os.getenv('ERR_MAIL_BCC')
@@ -83,11 +81,19 @@ class CallbackModule(CallbackBase):
                                   'can be provided using the `ERR_MAIL_TO` '
                                   'environment variable. Optional variables are: '
                                   '`ERR_MAIL_HOST`, `ERR_MAIL_PORT`, `ERR_MAIL_USERNAME`, '
-                                  '`ERR_MAIL_PASSWORD`, `ERR_MAIL_CC`, `ERR_MAIL_BCC`.')
+                                  '`ERR_MAIL_PASSWORD`, `ERR_MAIL_FROM`, `ERR_MAIL_CC`, '
+                                  '`ERR_MAIL_BCC`.')
+        
+        if self.callback_retry > 3:
+            self.disabled = True
+            self._display.warning('Error-mail Callback disabled for this '
+                                  'run! Check provided environment variables: '
+                                  'Host = `%s`, Port = `%s`, Username = `%s`, '
+                                  'Password = `%s`, From = `%s`, To = `%s`, Cc = `%s`, Bcc = `%s`'
+                                  % (host,port,username,password,sender,to,cc,bcc)))
+        
         else:
-            if sender is None:
-               sender='Ansible Notification <error@localhost>'
-            else:
+            if sender is not None:
                 sender = sender.replace('_','.')
             if subject is None:
                 subject = '[localhost][Undefined]'
@@ -114,12 +120,12 @@ class CallbackModule(CallbackBase):
                 b_addresses += b_bcc.split(b',')
             
             try:
-                if port == 465:
+                if port == '465':
                     server = smtplib.SMTP_SSL(host,port)
                 else:
                     server = smtplib.SMTP(host,port)
                 server.ehlo()
-                if port == 587:
+                if port == '587':
                     server.starttls()
                 if username is not None and password is not None:
                     try:
@@ -138,7 +144,8 @@ class CallbackModule(CallbackBase):
               try:
                   server.sendmail(b_sender, b_address, b_content)
               except smtplib.SMTPException as e:
-                  self._display.warning('Could not submit error-mail to %s:  %s' % (b_address,str(e)))
+                  self._display.warning('Could not submit error-mail from %s to %s:  '
+                                        '%s' % (b_sender,b_address,str(e)))
          
             server.quit()
 

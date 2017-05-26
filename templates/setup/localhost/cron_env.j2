@@ -6,6 +6,8 @@ export ERR_MAIL_USERNAME={% if err_mail_username is defined and err_mail_usernam
 
 export ERR_MAIL_PASSWORD={% if err_mail_password is defined and err_mail_password != "" and err_mail_password is not none %}'{{ err_mail_password }}'{% endif %}
 
+export ERR_MAIL_FROM={% if err_mail_from is defined and err_mail_from != "" and err_mail_from is not none %}'{{ err_mail_from }}'{% endif %}
+
 export ERR_MAIL_TO={% if err_mail_to is defined and err_mail_to != "" and err_mail_to is not none %}'{{ err_mail_to }}'{% endif %}
 
 export ERR_MAIL_CC={% if err_mail_cc is defined and err_mail_cc != "" and err_mail_cc is not none %}'{{ err_mail_cc }}'{% endif %}

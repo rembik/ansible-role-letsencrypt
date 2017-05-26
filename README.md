@@ -218,10 +218,13 @@ callback_whitelist = log_plays_rotatable, mail_error
 ```
 ```
 err_mail_host: ''           #default: localhost
-err_mail_port: ''           #default: 25
+err_mail_port: ''           #default: '25'
 err_mail_username: ''       #optional
 err_mail_password: ''       #optional
+err_mail_from: ''           #optional
 err_mail_to: ''             #required
+err_mail_cc: ''             #optional
+err_mail_bcc: ''            #optional
 ```
 
 ## Dependencies
