@@ -66,7 +66,7 @@ class CallbackModule(CallbackBase):
     def mail(self, sender=None, subject=None, body=None):
         
         host = os.getenv('ERR_MAIL_HOST', 'localhost')
-        port = os.getenv('ERR_MAIL_PORT', 25)
+        port = os.getenv('ERR_MAIL_PORT', '25')
         username = os.getenv('ERR_MAIL_USERNAME')
         password = os.getenv('ERR_MAIL_PASSWORD')
         sender = os.getenv('ERR_MAIL_FROM','Ansible Notification <error@localhost>')
@@ -90,7 +90,7 @@ class CallbackModule(CallbackBase):
                                   'run! Check provided environment variables: '
                                   'Host = `%s`, Port = `%s`, Username = `%s`, '
                                   'Password = `%s`, From = `%s`, To = `%s`, Cc = `%s`, Bcc = `%s`'
-                                  % (host,port,username,password,sender,to,cc,bcc)))
+                                  % (host,port,username,password,sender,to,cc,bcc))
         
         else:
             if sender is not None:
@@ -144,7 +144,7 @@ class CallbackModule(CallbackBase):
               try:
                   server.sendmail(b_sender, b_address, b_content)
               except smtplib.SMTPException as e:
-                  self._display.warning('Could not submit error-mail from %s to %s:  '
+                  self._display.warning('Could not submit error-mail from `%s` to `%s`:  '
                                         '%s' % (b_sender,b_address,str(e)))
          
             server.quit()
