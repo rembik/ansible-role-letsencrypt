@@ -162,17 +162,17 @@ class CallbackModule(CallbackBase):
                     
         prefix = 'Ansible: [%s][Failed]' % host.replace('_','.')
         subject = '%s %s' % (prefix,attach)
-        body = 'A task failed for host ' + host + '!\n\n____TASK__________________\n%s\n\n' % attach
+        body = 'A task failed for host ' + host + '!\n\n____TASK____\n%s\n\n' % attach
         if 'stdout' in res._result and res._result['stdout']:
             subject = '%s %s' % (prefix,res._result['stdout'].strip('\r\n').split('\n')[-1])
-            body += '____STANDARD OUTPUT_______\n' + res._result['stdout'] + '\n\n'
+            body += '____STANDARD OUTPUT____\n' + res._result['stdout'] + '\n\n'
         if 'stderr' in res._result and res._result['stderr']:
             subject = '%s %s' % (prefix,res._result['stderr'].strip('\r\n').split('\n')[-1])
-            body += '____STANDARD ERROR________\n' + res._result['stderr'] + '\n\n'
+            body += '____STANDARD ERROR____\n' + res._result['stderr'] + '\n\n'
         if 'msg' in res._result and res._result['msg']:
             subject = '%s %s' % (prefix,res._result['msg'].strip('\r\n').split('\n')[0])
-            body += '____MESSAGE_______________\n' + res._result['msg'] + '\n\n'
-        body += '____ERROR DUMP____________\n' + self._dump_results(res._result)
+            body += 'n____MESSAGE____\n' + res._result['msg'] + '\n\n'
+        body += '____ERROR DUMP____\n' + self._dump_results(res._result)
         
         self.playbook_failure = True
         self.mail(sender=sender, subject=subject, body=body)
@@ -187,11 +187,11 @@ class CallbackModule(CallbackBase):
         prefix = 'Ansible: [%s][Unreachable]' % host.replace('_','.')
         if isinstance(res, string_types):
             subject = '%s %s' % (prefix,res.strip('\r\n').split('\n')[-1])
-            body = 'An error occurred for host ' + host + '!\n\n____MESSAGE_______________\n' + res
+            body = 'An error occurred for host ' + host + '!\n\n____MESSAGE____\n' + res
         else:
             subject = '%s %s' % (prefix,res['msg'].strip('\r\n').split('\n')[0])
-            body = 'An error occurred for host ' + host + '!\n\n____MESSAGE_______________\n' + \
-                   res['msg'] + '\n\n____ERROR DUMP____________\n' + str(res)
+            body = 'An error occurred for host ' + host + '!\n\n____MESSAGE____\n' + \
+                   res['msg'] + '\n\n____ERROR DUMP____\n' + str(res)
         
         self.playbook_failure = True
         self.mail(sender=sender, subject=subject, body=body)
@@ -206,11 +206,11 @@ class CallbackModule(CallbackBase):
         prefix = '[%s][Async failure]' % host.replace('_','.')
         if isinstance(res, string_types):
             subject = '%s %s' % (prefix,res.strip('\r\n').split('\n')[-1])
-            body = 'An error occurred for host ' + host + '!\n\n____MESSAGE_______________\n' + res
+            body = 'An error occurred for host ' + host + '!\n\n____MESSAGE____\n' + res
         else:
             subject = '%s %s' % (prefix,res['msg'].strip('\r\n').split('\n')[0])
-            body = 'An error occurred for host ' + host + '!\n\n____MESSAGE_______________\n' + \
-                   res['msg'] + '\n\n____ERROR DUMP____________\n' + str(res)
+            body = 'An error occurred for host ' + host + '!\n\n____MESSAGE____\n' + \
+                   res['msg'] + '\n\n____ERROR DUMP____\n' + str(res)
         
         self.playbook_failure = True
         self.mail(sender=sender, subject=subject, body=body)
@@ -220,7 +220,7 @@ class CallbackModule(CallbackBase):
         if self.playbook_failure:
             
             subject = 'Ansible: [Playbook failed] Post failure recap'
-            body = 'Error(s) occurred for host(s) in playbook!\n\n____PLAY RECAP____________\n'
+            body = 'Error(s) occurred for host(s) in playbook!\n\n____PLAY RECAP____\n'
             hosts = sorted(stats.processed.keys())
             for h in hosts:
                 t = stats.summarize(h)
