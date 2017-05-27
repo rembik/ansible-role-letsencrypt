@@ -219,7 +219,7 @@ class CallbackModule(CallbackBase):
         
         if self.playbook_failure:
             
-            subject = '[Playbook failed] Post failure recap'
+            subject = 'Ansible: [Playbook failed] Post failure recap'
             body = 'Error(s) occurred for host(s) in playbook!\n\n____PLAY RECAP____________\n'
             hosts = sorted(stats.processed.keys())
             for h in hosts:
