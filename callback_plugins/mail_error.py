@@ -69,7 +69,7 @@ class CallbackModule(CallbackBase):
         port = os.getenv('ERR_MAIL_PORT', '25')
         username = os.getenv('ERR_MAIL_USERNAME')
         password = os.getenv('ERR_MAIL_PASSWORD')
-        sender = os.getenv('ERR_MAIL_FROM','Ansible Notification <error@localhost>')
+        sender = os.getenv('ERR_MAIL_FROM', sender)
         to = os.getenv('ERR_MAIL_TO')
         cc = os.getenv('ERR_MAIL_CC')
         bcc = os.getenv('ERR_MAIL_BCC')
@@ -93,10 +93,10 @@ class CallbackModule(CallbackBase):
                                   % (host,port,username,password,sender,to,cc,bcc))
         
         else:
-            if sender is not None:
-                sender = sender.replace('_','.')
+            if sender is None:
+                sender = 'Ansible Notification <error@localhost>'
             if subject is None:
-                subject = '[localhost][Undefined]'
+                subject = 'Ansible: [localhost][Undefined]'
             if body is None:
                 body = 'An error occurred for an undefined host!'
             
@@ -155,12 +155,12 @@ class CallbackModule(CallbackBase):
         if ignore_errors:
             return
         
-        sender = 'Ansible Notification <error@%s>' % host
+        sender = 'Ansible Notification <error@%s>' % host.replace('_','.')
         attach = res._task.action
         if 'invocation' in res._result:
             attach = "%s:  %s" % (res._task.action, json.dumps(res._result['invocation']['module_args']))
                     
-        prefix = '[%s][Failed]' % host
+        prefix = 'Ansible: [%s][Failed]' % host.replace('_','.')
         subject = '%s %s' % (prefix,attach)
         body = 'A task failed for host ' + host + '!\n\n____TASK__________________\n%s\n\n' % attach
         if 'stdout' in res._result and res._result['stdout']:
@@ -182,9 +182,9 @@ class CallbackModule(CallbackBase):
         host = result._host.get_name()
         res = result._result
 
-        sender = 'Ansible Notification <error@%s>' % host
+        sender = 'Ansible Notification <error@%s>' % host.replace('_','.')
         
-        prefix = '[%s][Unreachable]' % host
+        prefix = 'Ansible: [%s][Unreachable]' % host.replace('_','.')
         if isinstance(res, string_types):
             subject = '%s %s' % (prefix,res.strip('\r\n').split('\n')[-1])
             body = 'An error occurred for host ' + host + '!\n\n____MESSAGE_______________\n' + res
@@ -201,9 +201,9 @@ class CallbackModule(CallbackBase):
         host = result._host.get_name()
         res = result._result
 
-        sender = 'Ansible Notification <error@%s>' % host
+        sender = 'Ansible Notification <error@%s>' % host.replace('_','.')
         
-        prefix = '[%s][Async failure]' % host
+        prefix = '[%s][Async failure]' % host.replace('_','.')
         if isinstance(res, string_types):
             subject = '%s %s' % (prefix,res.strip('\r\n').split('\n')[-1])
             body = 'An error occurred for host ' + host + '!\n\n____MESSAGE_______________\n' + res
