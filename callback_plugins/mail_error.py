@@ -171,7 +171,7 @@ class CallbackModule(CallbackBase):
             body += '____STANDARD ERROR____\n' + res._result['stderr'] + '\n\n'
         if 'msg' in res._result and res._result['msg']:
             subject = '%s %s' % (prefix,res._result['msg'].strip('\r\n').split('\n')[0])
-            body += 'n____MESSAGE____\n' + res._result['msg'] + '\n\n'
+            body += '____MESSAGE____\n' + res._result['msg'] + '\n\n'
         body += '____ERROR DUMP____\n' + self._dump_results(res._result)
         
         self.playbook_failure = True
