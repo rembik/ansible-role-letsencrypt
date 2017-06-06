@@ -1,8 +1,10 @@
 # Ansible Role: Let's Encrypt private networks
 **Setup** [Let's Encrypt](https://letsencrypt.org/) ACME client [dehydrated](https://github.com/lukas2511/dehydrated) with a bunch of [dns-01 hooks](https://github.com/lukas2511/dehydrated/wiki/Examples-for-DNS-01-hooks) on Debian/Ubuntu Linux servers, **automatically** sign/renew **certificate**s and **deploy** them to other Linux or Windows proxy-/webservers.
 
-* [supported dns providers](#dns-providers)
-* [supported proxy-/webservers](#proxy--or-webservers)
+* [Supported dns providers](#dns-providers)
+* [Supported proxy-/webservers](#proxy--or-webservers)
+
+* [Usage](#usage)
 
 ## Requirements
 * `git` for setup Let's Encrypt ACME client on Debian/Ubuntu Linux servers
@@ -134,7 +136,7 @@ le_deploy_certificates:                         # required dictionary list for d
     - "{{ le_deploy_certificate.example_com }}"
 ```
 These dictionaries are required for the deployment process and should be declared in the `host_vars` inventory file of proxy-/webservers where the certificates will be deployed to.
-Proxy-/webserver specific variables for this deployment dictionaries are shown under the specific proxy-/webserver in this section. 
+Proxy-/webserver specific variables for these deployment dictionaries are shown under the specific proxy-/webserver in this section. 
 
 #### Proxy- or Webservers
 ```
