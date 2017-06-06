@@ -146,11 +146,11 @@ le_deploy2_webservers:
   - "spiceworks_monitor"
 ```
 Supported Proxy-/Webserver the certificates may be deployed to, are currently:
-* nginx (Linux)
-* Microsoft IIS
-* Microsoft Exchange
-* [Sophos UTM]()
-* [Spiceworks Network Monitor]()
+* [nginx (Linux)](https://nginx.org/en/)
+* [Microsoft IIS](https://www.iis.net/)
+* [Microsoft Exchange](https://products.office.com/de-de/exchange/microsoft-exchange-server-2016)
+* [Sophos UTM](https://www.sophos.com/de-de/products/unified-threat-management.aspx)
+* [Spiceworks Network Monitor](https://www.spiceworks.com/free-network-monitoring-management-software/)
 
 ##### nginx
 ```
