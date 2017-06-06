@@ -144,8 +144,14 @@ le_deploy2_webservers:
   - "ms_iis"
   - "ms_exchange"
   - "sophos_utm"
+  - "spiceworks_monitor"
 ```
-Supported Proxy-/Webserver the certificates will be deployed to, are currently nginx (Linux), Microsoft IIS, Microsoft Exchange and Sophos UTM.
+Supported Proxy-/Webserver the certificates may be deployed to, are currently:
+* nginx (Linux)
+* Microsoft IIS
+* Microsoft Exchange
+* [Sophos UTM]()
+* [Spiceworks Network Monitor]()
 
 ##### nginx
 ```
@@ -195,7 +201,19 @@ le_deploy_certificate:
         ref:                                    # required
         ref_ca:                                 # required
 ```
-For more information about what happen during deployment see [utm-update-certificate](https://github.com/mbunkus/utm-update-certificate). For detail instructions about how to get required certificate references `ref` and `ref_ca` see [ansible-letsencrypt-example Wiki](https://github.com/rembik/ansible-letsencrypt-example/wiki/Configure-Sophos-UTM#4-get-certificate-references)
+For more information about what happen during deployment see [utm-update-certificate](https://github.com/mbunkus/utm-update-certificate). For detail instructions about how to get required certificate references `ref` and `ref_ca` see [ansible-letsencrypt-example Wiki](https://github.com/rembik/ansible-letsencrypt-example/wiki/Configure-Sophos-UTM#4-get-certificate-references).
+
+##### Spiceworks Network Monitor
+```
+le_deploy2_spiceworks_monitor_install_dir: "C:\\Program Files\\Spiceworks\\Network Monitor"
+```
+```
+le_deploy_certificate:
+    example_com:
+        domain: "example.com"                   # required
+        keystore_password:                      # required
+```
+For detail instructions about how to get required certificate keystore password `keystore_password` see [ansible-letsencrypt-example Wiki](https://github.com/rembik/ansible-letsencrypt-example/wiki/Configure-Spiceworks-Monitor#2-optain-keystore-password).
 
 ### Automation
 This role provided one optionally automation solution. For scheduled plays it creates cronjobs with `cron` and for rotating log files of the plays it uses `logrotate`.
@@ -204,9 +222,10 @@ This role provided one optionally automation solution. For scheduled plays it cr
 le_cron_playbook_filename: "letsencrypt.yml"
 le_cron_vault_password_file: "{{ playbook_dir }}/.vault"
 le_cron_inventory_groups:
+  - "all"
 ```
 Therefore cron need the location of your [vault password file](http://docs.ansible.com/ansible/playbooks_vault.html#running-a-playbook-with-vault), the filename of the letsencrypt playbook which should be automated and a list of inventory groups the cronjobs should be differentiated by.
-The cronjobs should be created during the setup process of the role (see example playbook).
+The cronjobs should be created during the setup process of the role (see [example playbook](#example-playbook-letsencryptyml)).
 
 #### Ansible Callbacks
 This role comes with customized `mail_error` and `log_plays_rotatable` callback plugins. The `log_plays_rotatable` callback logs all playbooks per host and enable rotating the log files with `logrotate`.

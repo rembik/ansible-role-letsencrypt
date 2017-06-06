@@ -88,6 +88,7 @@ le_deploy2_webservers:
   - "ms_iis"
   - "ms_exchange"
   - "sophos_utm"
+  - "spiceworks_monitor"
 # default webserver for certificate deployment
 # NOTE: use same name as listed in le_deploy2_webservers
 le_deploy2_webserver: "nginx"
@@ -105,8 +106,12 @@ le_deploy2_ms_iis_ip: "*"
 le_deploy2_ms_iis_port: 443
 le_deploy2_ms_iis_host_header: ""
 le_deploy2_ms_iis_sni: false
+# Spiceworks Network Monitor
+# ------------------------------------------------
+le_deploy2_spiceworks_monitor_install_dir: "C:\\Program Files\\Spiceworks\\Network Monitor"
 
 # automation certification and deployment
 le_cron_playbook_filename: "letsencrypt.yml"
 le_cron_vault_password_file: "{{ playbook_dir }}/.vault"
 le_cron_inventory_groups:
+  - "all"
