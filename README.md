@@ -3,7 +3,6 @@
 
 * [Supported dns providers](#dns-providers)
 * [Supported proxy-/webservers](#proxy--or-webservers)
-
 * [Usage](#usage)
 
 ## Requirements
