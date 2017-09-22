@@ -98,7 +98,8 @@ le_deploy2_local_certs_dir: "/opt/letsencrypt/certs"
 # nginx
 # ------------------------------------------------
 le_deploy2_nginx_certs_dir: "/etc/nginx/certs"
-le_deploy2_nginx_reload_cmd: "/etc/init.d/nginx reload"
+le_deploy2_nginx_reload_cmds:
+  - "/etc/init.d/nginx reload"
 # MS IIS
 # ------------------------------------------------
 le_deploy2_ms_iis_site_name: "Default Web Site"

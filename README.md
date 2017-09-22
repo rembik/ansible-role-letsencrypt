@@ -156,7 +156,8 @@ Supported Proxy-/Webserver the certificates may be deployed to, are currently:
 ##### nginx
 ```
 le_deploy2_nginx_certs_dir: "/etc/nginx/certs"
-le_deploy2_nginx_reload_cmd: "/etc/init.d/nginx reload"
+le_deploy2_nginx_reload_cmds:
+    - "/etc/init.d/nginx reload"
 ```
 ```
 le_deploy_certificate:
