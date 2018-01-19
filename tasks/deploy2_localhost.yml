@@ -15,6 +15,9 @@
   register: le_certificate_loop_state
   delegate_to: 127.0.0.1
 
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - load certificate deployment state from {{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}/.flag"
+  include_vars: "{{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}/.flag"
+
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - when certificate is signed/renewed:"
   block:
     - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - generate new [pkcs12].pfx certificate file"
@@ -38,11 +41,21 @@
     - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - set certificate deployment state to 'deploy'"
       set_fact:
         le_certificate_loop_flag: "deploy"
+
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - set new certificate date"
+      set_fact:
+        le_certificate_loop_date: "{{ ansible_date_time.date }}"
   when: le_certificate_loop_state.results[1].changed
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - set certificate deployment state to 'unchanged'"
-  set_fact:
-    le_certificate_loop_flag: "unchanged"
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - when certificate isn't signed/renewed:"
+  block:
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - set certificate deployment state to 'unchanged'"
+      set_fact:
+        le_certificate_loop_flag: "unchanged"
+        
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - set old certificate date"
+      set_fact:
+        le_certificate_loop_date: "{{ le_certificate_date }}"
   when: le_certificate_loop_state.results[1].changed == false
 
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - save certificate state into {{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}/.flag"

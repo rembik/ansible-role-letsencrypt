@@ -29,7 +29,7 @@
     - "privkey.pem"
 
 - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - create Java keystore"
-  win_shell: "keytool -importkeystore -srckeystore .\\pkcs12.pfx -srcstoretype pkcs12 -srcstorepass \"{{ le_dehydrated_pkcs12_password }}\" -destkeypass \"{{ le_dehydrated_pkcs12_password }}\" -srcalias \"let's encrypt {{ le_deploy_certificate_loop.domain }} ({{ ansible_date_time.date }})\" -destkeystore .\\monitoring.jks -deststoretype jks -deststorepass \"{{ le_deploy_certificate_loop.keystore_password }}\" -destkeypass \"{{ le_deploy_certificate_loop.keystore_password }}\" -destalias localhost"
+  win_shell: "keytool -importkeystore -srckeystore .\\pkcs12.pfx -srcstoretype pkcs12 -srcstorepass \"{{ le_dehydrated_pkcs12_password }}\" -destkeypass \"{{ le_dehydrated_pkcs12_password }}\" -srcalias \"let's encrypt {{ le_deploy_certificate_loop.domain }} ({{ le_certificate_date }})\" -destkeystore .\\monitoring.jks -deststoretype jks -deststorepass \"{{ le_deploy_certificate_loop.keystore_password }}\" -destkeypass \"{{ le_deploy_certificate_loop.keystore_password }}\" -destalias localhost"
   args:
     chdir: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
     executable: cmd

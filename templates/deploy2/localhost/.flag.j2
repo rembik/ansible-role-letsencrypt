@@ -2,3 +2,6 @@
 
 # deployment flag for specific certificate [deploy, unchanged]
 le_deploy_certificate_flag: "{{ le_certificate_loop_flag|default("unchanged") }}"
+
+# certificate date for specific certificate
+le_certificate_date: "{{ le_certificate_loop_date|default(ansible_date_time.date) }}"
