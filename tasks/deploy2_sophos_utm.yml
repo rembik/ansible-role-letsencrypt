@@ -28,7 +28,8 @@
     mode: 0700
 
 - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - run update script"
-  shell: "update-utm-certificate.pl {{ le_deploy_certificate_loop.ref }} cert.pem privkey.pem {{ le_deploy_certificate_loop.ref_ca }} chain.pem"
+  become: true
+  shell: "./update-utm-certificate.pl {{ le_deploy_certificate_loop.ref }} cert.pem privkey.pem {{ le_deploy_certificate_loop.ref_ca }} chain.pem"
   args:
     chdir: "{{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}"
 

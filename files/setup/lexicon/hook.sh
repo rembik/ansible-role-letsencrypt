@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
 # Example how to deploy a DNS challenge using lexicon
+# https://github.com/AnalogJ/lexicon/blob/master/examples/dehydrated.default.sh
 
 set -e
 set -u
