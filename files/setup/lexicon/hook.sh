@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Example how to deploy a DNS challenge using lexicon
-# https://github.com/AnalogJ/lexicon/blob/master/examples/dehydrated.default.sh
 
 set -e
 set -u
@@ -48,6 +47,22 @@ function clean_challenge {
     # files or DNS records that are no longer needed.
     #
     # The parameters are the same as for deploy_challenge.
+}
+
+function invalid_challenge() {
+    local DOMAIN="${1}" RESPONSE="${2}"
+
+    echo "invalid_challenge called: ${DOMAIN}, ${RESPONSE}"
+
+    # This hook is called if the challenge response has failed, so domain
+    # owners can be aware and act accordingly.
+    #
+    # Parameters:
+    # - DOMAIN
+    #   The primary domain name, i.e. the certificate common
+    #   name (CN).
+    # - RESPONSE
+    #   The response that the verification server returned
 }
 
 function deploy_cert {
@@ -102,4 +117,14 @@ exit_hook() {
   :
 }
 
-HANDLER=$1; shift; $HANDLER "$@"
+startup_hook() {
+  # This hook is called before the dehydrated command to do some initial tasks
+  # (e.g. starting a webserver).
+
+  :
+}
+
+HANDLER=$1; shift;
+if [ -n "$(type -t $HANDLER)" ] && [ "$(type -t $HANDLER)" = function ]; then
+  $HANDLER "$@"
+fi

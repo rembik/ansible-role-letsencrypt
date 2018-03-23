@@ -13,7 +13,7 @@
 
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - set/check token"
   set_fact:
-    le_certificate_loop_dns_auth_token: "{{ le_certificate_loop.auth_password| default(le_dns_lexicon_auth_password) }}"
+    le_certificate_loop_dns_auth_token: "{{ le_certificate_loop.auth_token| default(le_dns_lexicon_auth_token) }}"
   when: (le_certificate_loop.auth_token is defined) or (le_dns_lexicon_auth_token is defined and le_dns_lexicon_auth_token != "" and le_dns_lexicon_auth_token is not none)
   register: le_certificate_loop_auth_token_defined
 
@@ -39,6 +39,6 @@
   when: le_certificate_loop_auth_token_defined|skipped and le_certificate_loop_auth_password_defined|skipped
 
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - sign/renew non-existant/changed/expiring certificate"
-  shell: "PROVIDER={{ le_certificate_loop_dns_provider }} LEXICON_{{ le_certificate_loop_dns_provider|upper }}_USERNAME='{{ le_certificate_loop_auth_username }}' LEXICON_{{ le_certificate_loop_dns_provider|upper }}_TOKEN='{{ le_certificate_loop_auth_token }}' LEXICON_{{ le_certificate_loop_dns_provider|upper }}_PASSWORD='{{ le_certificate_loop_auth_password }}' /opt/letsencrypt/dehydrated/dehydrated -c -d '{{ le_certificate_loop.domain }} {{ le_certificate_loop.altnames | default('') }}' -t 'dns-01' -k '{{ le_dehydrated_hooks_dir }}/lexicon/{{ le_dns_lexicon_hook_file }}'"
+  shell: "PROVIDER={{ le_certificate_loop_dns_provider }} LEXICON_{{ le_certificate_loop_dns_provider|upper }}_USERNAME='{{ le_certificate_loop_dns_auth_username }}' LEXICON_{{ le_certificate_loop_dns_provider|upper }}_TOKEN='{{ le_certificate_loop_dns_auth_token }}' LEXICON_{{ le_certificate_loop_dns_provider|upper }}_PASSWORD='{{ le_certificate_loop_dns_auth_password }}' /opt/letsencrypt/dehydrated/dehydrated -c -d '{{ le_certificate_loop.domain }} {{ le_certificate_loop.altnames | default('') }}' -t 'dns-01' -k '{{ le_dehydrated_hooks_dir }}/lexicon/{{ le_dns_lexicon_hook_file }}'"
   async: 1500
   poll: 15
