@@ -9,14 +9,12 @@
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : when challenge type is 'dns-01':"
   block:
     - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DNS-01 - certificate with LEXICON hook:"
-      include: "certificate_lexicon.yml"
-      static: no
+      include_tasks: "certificate_lexicon.yml"
       when:
         - le_certificate_loop_dns_provider in le_dns_lexicon_providers
 
     - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DNS-01 - certificate with {{ le_certificate_loop_dns_provider|upper }} hook:"
-      include: "certificate_{{ le_certificate_loop_dns_provider | default(le_dns_provider) }}.yml"
-      static: no
+      include_tasks: "certificate_{{ le_certificate_loop_dns_provider | default(le_dns_provider) }}.yml"
       when:
         - le_certificate_loop_dns_provider not in le_dns_lexicon_providers
   when:
@@ -32,4 +30,4 @@
     - le_certificate_loop_challenge_type == "http-01"
 
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : save certificate and it deployment state on LOCALHOST:"
-  include: "deploy2_localhost.yml"
+  import_tasks: "deploy2_localhost.yml"

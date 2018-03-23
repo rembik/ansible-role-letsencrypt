@@ -8,7 +8,7 @@
 #    - letsencrypt
 #  post_tasks:
 #    - name: "letsencrypt : SETUP : config letsencrypt cronjobs (including mail_error) for inventory groups"
-#      include: "roles/letsencrypt/tasks/setup_cron.yml"
+#      include_tasks: "roles/letsencrypt/tasks/setup_cron.yml"
 #      with_items:
 #        - "{{ le_cron_inventory_groups }}"
 #      loop_control:

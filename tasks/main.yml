@@ -1,8 +1,7 @@
 ---
 
 - name: "++++++++++ install and config dehydrated and all challenge hooks ++++++++++"
-  include: setup.yml
-  static: no
+  include_tasks: setup.yml
   become: true
   when:
     - le_certificates is defined
@@ -12,8 +11,7 @@
     - setup
 
 - name: "++++++++++ sign/renew non-existant/changed/expiring certificates ++++++++++"
-  include: certificate.yml
-  static: no
+  include_tasks: certificate.yml
   become: true
   when:
     - le_certificates is defined
@@ -27,8 +25,7 @@
     - certificate
 
 - name: "++++++++++ deploy signed/renewed certificates to other webservers +++++++++"
-  include: deploy.yml
-  static: no
+  include_tasks: deploy.yml
   when: (le_deploy == true or le_deploy == "force") and le_deploy_certificates is defined
   with_items:
     - "{{ le_deploy_certificates }}"

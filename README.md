@@ -264,7 +264,7 @@ This role provides `setup`,`certificate` and `deploy` Ansible Tags to split the 
   post_tasks:
     - block:
         - name: "letsencrypt : SETUP : config letsencrypt cronjobs (incl. mail_error) for inventory groups"
-          include: "roles/letsencrypt/tasks/setup_cron.yml"
+          include_tasks: "roles/letsencrypt/tasks/setup_cron.yml"
           with_items:
             - "{{ le_cron_inventory_groups }}"
           loop_control:
