@@ -29,5 +29,5 @@
   when:
     - le_certificate_loop_challenge_type == "http-01"
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : save certificate and it deployment state on LOCALHOST:"
-  import_tasks: "deploy2_localhost.yml"
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : save certificate and specific deployment state on LOCALHOST:"
+  include_tasks: "deploy2_localhost.yml"
