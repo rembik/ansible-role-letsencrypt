@@ -21,6 +21,8 @@
       file:
         path: "{{ playbook_dir }}/.cron"
         state: directory
+      delegate_to: 127.0.0.1
+      run_once: true
     - name: "letsencrypt : SETUP cron : [{{ le_setup_cron_loop }}] - config cron environment"
       template:
         src: "roles/letsencrypt/templates/setup/localhost/cron_env.j2"
