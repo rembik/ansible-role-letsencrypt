@@ -1,44 +1,47 @@
 ---
+- name: "CERTIFICATE : LEXICON DNS-01"
+  block:
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - set/check username"
+      set_fact:
+        le_certificate_loop_dns_auth_username: "{{ le_certificate_loop.auth_username| default(le_dns_lexicon_auth_username) }}"
+      when: (le_certificate_loop.auth_username is defined) or (le_dns_lexicon_auth_username is defined and le_dns_lexicon_auth_username != "" and le_dns_lexicon_auth_username is not none)
+      register: le_certificate_loop_auth_username_defined
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - set/check username"
-  set_fact:
-    le_certificate_loop_dns_auth_username: "{{ le_certificate_loop.auth_username| default(le_dns_lexicon_auth_username) }}"
-  when: (le_certificate_loop.auth_username is defined) or (le_dns_lexicon_auth_username is defined and le_dns_lexicon_auth_username != "" and le_dns_lexicon_auth_username is not none)
-  register: le_certificate_loop_auth_username_defined
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - fail if username undefined"
+      fail:
+        msg: "Unable to get {{ le_certificate_loop_dns_provider }} username from certificate variable 'auth_username' or default variable 'le_dns_lexicon_auth_username'!"
+      when: le_certificate_loop_auth_username_defined|skipped
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - fail if username undefined"
-  fail:
-    msg: "Unable to get {{ le_certificate_loop_dns_provider }} username from certificate variable 'auth_username' or default variable 'le_dns_lexicon_auth_username'!"
-  when: le_certificate_loop_auth_username_defined|skipped
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - set/check token"
+      set_fact:
+        le_certificate_loop_dns_auth_token: "{{ le_certificate_loop.auth_token| default(le_dns_lexicon_auth_token) }}"
+      when: (le_certificate_loop.auth_token is defined) or (le_dns_lexicon_auth_token is defined and le_dns_lexicon_auth_token != "" and le_dns_lexicon_auth_token is not none)
+      register: le_certificate_loop_auth_token_defined
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - set/check token"
-  set_fact:
-    le_certificate_loop_dns_auth_token: "{{ le_certificate_loop.auth_token| default(le_dns_lexicon_auth_token) }}"
-  when: (le_certificate_loop.auth_token is defined) or (le_dns_lexicon_auth_token is defined and le_dns_lexicon_auth_token != "" and le_dns_lexicon_auth_token is not none)
-  register: le_certificate_loop_auth_token_defined
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - set empty token if undefined"
+      set_fact:
+        le_certificate_loop_dns_auth_token: ""
+      when: le_certificate_loop_auth_token_defined|skipped
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - set empty token if undefined"
-  set_fact:
-    le_certificate_loop_dns_auth_token: ""
-  when: le_certificate_loop_auth_token_defined|skipped
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - set/check password"
+      set_fact:
+        le_certificate_loop_dns_auth_password: "{{ le_certificate_loop.auth_password| default(le_dns_lexicon_auth_password) }}"
+      when: (le_certificate_loop.auth_password is defined) or (le_dns_lexicon_auth_password is defined and le_dns_lexicon_auth_password != "" and le_dns_lexicon_auth_password is not none)
+      register: le_certificate_loop_auth_password_defined
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - set/check password"
-  set_fact:
-    le_certificate_loop_dns_auth_password: "{{ le_certificate_loop.auth_password| default(le_dns_lexicon_auth_password) }}"
-  when: (le_certificate_loop.auth_password is defined) or (le_dns_lexicon_auth_password is defined and le_dns_lexicon_auth_password != "" and le_dns_lexicon_auth_password is not none)
-  register: le_certificate_loop_auth_password_defined
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - set empty password if undefined"
+      set_fact:
+        le_certificate_loop_dns_auth_password: ""
+      when: le_certificate_loop_auth_password_defined|skipped
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - set empty password if undefined"
-  set_fact:
-    le_certificate_loop_dns_auth_password: ""
-  when: le_certificate_loop_auth_password_defined|skipped
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - fail if password and token undefined"
+      fail:
+        msg: "Unable to get {{ le_certificate_loop_dns_provider|upper }} token or password from certificate variables 'auth_token','auth_password' or default variable 'le_dns_lexicon_auth_token','le_dns_lexicon_auth_password'!"
+      when: le_certificate_loop_auth_token_defined|skipped and le_certificate_loop_auth_password_defined|skipped
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - fail if password and token undefined"
-  fail:
-    msg: "Unable to get {{ le_certificate_loop_dns_provider|upper }} token or password from certificate variables 'auth_token','auth_password' or default variable 'le_dns_lexicon_auth_token','le_dns_lexicon_auth_password'!"
-  when: le_certificate_loop_auth_token_defined|skipped and le_certificate_loop_auth_password_defined|skipped
-
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - sign/renew non-existant/changed/expiring certificate"
-  shell: "PROVIDER={{ le_certificate_loop_dns_provider }} LEXICON_{{ le_certificate_loop_dns_provider|upper }}_USERNAME='{{ le_certificate_loop_dns_auth_username }}' LEXICON_{{ le_certificate_loop_dns_provider|upper }}_TOKEN='{{ le_certificate_loop_dns_auth_token }}' LEXICON_{{ le_certificate_loop_dns_provider|upper }}_PASSWORD='{{ le_certificate_loop_dns_auth_password }}' /opt/letsencrypt/dehydrated/dehydrated -c -d '{{ le_certificate_loop.domain }} {{ le_certificate_loop.altnames | default('') }}' -t 'dns-01' -k '{{ le_dehydrated_hooks_dir }}/lexicon/{{ le_dns_lexicon_hook_file }}'"
-  async: 1500
-  poll: 15
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : LEXICON DNS-01 - sign/renew non-existant/changed/expiring certificate"
+      shell: "PROVIDER={{ le_certificate_loop_dns_provider }} LEXICON_{{ le_certificate_loop_dns_provider|upper }}_USERNAME='{{ le_certificate_loop_dns_auth_username }}' LEXICON_{{ le_certificate_loop_dns_provider|upper }}_TOKEN='{{ le_certificate_loop_dns_auth_token }}' LEXICON_{{ le_certificate_loop_dns_provider|upper }}_PASSWORD='{{ le_certificate_loop_dns_auth_password }}' /opt/letsencrypt/dehydrated/dehydrated -c -d '{{ le_certificate_loop.domain }} {{ le_certificate_loop.altnames | default('') }}' -t 'dns-01' -k '{{ le_dehydrated_hooks_dir }}/lexicon/{{ le_dns_lexicon_hook_file }}'"
+      async: 1500
+      poll: 15
+  tags:
+    - always

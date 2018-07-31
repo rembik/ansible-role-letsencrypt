@@ -1,38 +1,42 @@
 ---
 # install and config dns-01 hook for dns provider Hetzner
-- name: "SETUP Hetzner : checkout git repo dehydrated-hetzner-hook"
-  git:
-    repo: "https://github.com/rembik/dehydrated-hetzner-hook.git"
-    dest: "/opt/letsencrypt/dehydrated-hetzner-hook"
-    version: master
-    force: yes
+- name: "SETUP Hetzner"
+  block:
+    - name: "SETUP Hetzner : checkout git repo dehydrated-hetzner-hook"
+      git:
+        repo: "https://github.com/rembik/dehydrated-hetzner-hook.git"
+        dest: "/opt/letsencrypt/dehydrated-hetzner-hook"
+        version: master
+        force: yes
 
-- name: "SETUP Hetzner : install/update dependent sytem packages"
-  apt:
-    name: "{{ item }}"
-    state: latest
-    update_cache: yes
-  with_items:
-     - python
-     - python-dev
-     - python-pip
-#    - python3
-#    - python3-pip
+    - name: "SETUP Hetzner : install/update dependent sytem packages"
+      apt:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      with_items:
+        - python
+        - python-dev
+        - python-pip
+    #    - python3
+    #    - python3-pip
 
-#- name: "SETUP Hetzner : install python3 requirements"
-#  command: "pip3 install -r /opt/letsencrypt/dehydrated-hetzner-hook/requirements.txt"
+    #- name: "SETUP Hetzner : install python3 requirements"
+    #  command: "pip3 install -r /opt/letsencrypt/dehydrated-hetzner-hook/requirements.txt"
 
-- name: "SETUP Hetzner : install python requirements"
-  pip:
-    requirements: "/opt/letsencrypt/dehydrated-hetzner-hook/requirements-python-2.txt"
+    - name: "SETUP Hetzner : install python requirements"
+      pip:
+        requirements: "/opt/letsencrypt/dehydrated-hetzner-hook/requirements-python-2.txt"
 
-- name: "SETUP Hetzner : create default.json (template) in /opt/letsencrypt/dehydrated-hetzner-hook/accounts"
-  template:
-    src: "setup/hetzner/default.j2"
-    dest: "/opt/letsencrypt/dehydrated-hetzner-hook/accounts/default.json"
+    - name: "SETUP Hetzner : create default.json (template) in /opt/letsencrypt/dehydrated-hetzner-hook/accounts"
+      template:
+        src: "setup/hetzner/default.j2"
+        dest: "/opt/letsencrypt/dehydrated-hetzner-hook/accounts/default.json"
 
-- name: "SETUP Hetzner : create sym link to {{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}"
-  file:
-    src: "/opt/letsencrypt/dehydrated-hetzner-hook/"
-    dest: "{{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}"
-    state: link
+    - name: "SETUP Hetzner : create sym link to {{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}"
+      file:
+        src: "/opt/letsencrypt/dehydrated-hetzner-hook/"
+        dest: "{{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}"
+        state: link
+  tags:
+    - always

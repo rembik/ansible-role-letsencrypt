@@ -1,19 +1,22 @@
 ---
 # Install and config dehydrated and all challenge hooks
+- name: SETUP
+  block:
+    - name: "SETUP : install and config ACME client dehydrated:"
+      import_tasks: "setup_dehydrated.yml"
 
-- name: "SETUP : install and config ACME client dehydrated:"
-  import_tasks: "setup_dehydrated.yml"
+    - name: "SETUP : install and config dns provider hook(s) for dns-01 challenge:"
+      include_tasks: "setup_{{ le_setup_dns_loop }}.yml"
+      with_items:
+        - "{{ le_dns_providers }}"
+      loop_control:
+        loop_var: le_setup_dns_loop
 
-- name: "SETUP : install and config dns provider hook(s) for dns-01 challenge:"
-  include_tasks: "setup_{{ le_setup_dns_loop }}.yml"
-  with_items:
-    - "{{ le_dns_providers }}"
-  loop_control:
-    loop_var: le_setup_dns_loop
-
-- name: "SETUP : config proxy- or/and webserver for http-01 challenge:"
-  include_tasks: "setup_{{ le_http_webserver }}.yml"
-  when:
-    - le_http_webserver is defined
-    - le_http_webserver != ""
-    - le_http_webserver is not none
+    - name: "SETUP : config proxy- or/and webserver for http-01 challenge:"
+      include_tasks: "setup_{{ le_http_webserver }}.yml"
+      when:
+        - le_http_webserver is defined
+        - le_http_webserver != ""
+        - le_http_webserver is not none
+  tags:
+    - always

@@ -1,30 +1,34 @@
 ---
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : MS IIS - create certificates directory {{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
-  win_file:
-    path: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
-    state: directory
+- name: "DEPLOY : MS IIS"
+  block:
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : MS IIS - create certificates directory {{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
+      win_file:
+        path: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
+        state: directory
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : MS IIS - copy certificate file to {{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
-  win_copy:
-    src: "{{ le_deploy2_local_certs_dir }}/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
-    dest: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\{{ item }}"
-  with_items:
-      - "pkcs12.pfx"
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : MS IIS - copy certificate file to {{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
+      win_copy:
+        src: "{{ le_deploy2_local_certs_dir }}/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
+        dest: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\{{ item }}"
+      with_items:
+          - "pkcs12.pfx"
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : MS IIS - copy update script to {{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
-  win_copy:
-    src: "deploy2/ms_iis/{{ item }}"
-    dest: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\{{ item }}"
-  with_items:
-    - "update-iis-certificate.ps1"
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : MS IIS - copy update script to {{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
+      win_copy:
+        src: "deploy2/ms_iis/{{ item }}"
+        dest: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\{{ item }}"
+      with_items:
+        - "update-iis-certificate.ps1"
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : MS IIS - run update script"
-  win_shell: ".\\update-iis-certificate.ps1 -PFXPath '.\\pkcs12.pfx' -CertSubject '{{ le_deploy_certificate_loop.domain }}' -PFXPassword '{{ le_dehydrated_pkcs12_password }}' -SiteName '{{ le_deploy_certificate_loop.site_name|default(le_deploy2_ms_iis_site_name) }}' -IP '{{ le_deploy_certificate_loop.ip|default(le_deploy2_ms_iis_ip) }}' -Port '{{ le_deploy_certificate_loop.port|default(le_deploy2_ms_iis_port) }}' -HostHeader '{{ le_deploy_certificate_loop.host_header|default(le_deploy2_ms_iis_host_header) }}'{% if le_deploy_certificate_loop.sni|default(le_deploy2_ms_iis_sni) %} -SNI{% endif %}"
-  args:
-    chdir: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : MS IIS - run update script"
+      win_shell: ".\\update-iis-certificate.ps1 -PFXPath '.\\pkcs12.pfx' -CertSubject '{{ le_deploy_certificate_loop.domain }}' -PFXPassword '{{ le_dehydrated_pkcs12_password }}' -SiteName '{{ le_deploy_certificate_loop.site_name|default(le_deploy2_ms_iis_site_name) }}' -IP '{{ le_deploy_certificate_loop.ip|default(le_deploy2_ms_iis_ip) }}' -Port '{{ le_deploy_certificate_loop.port|default(le_deploy2_ms_iis_port) }}' -HostHeader '{{ le_deploy_certificate_loop.host_header|default(le_deploy2_ms_iis_host_header) }}'{% if le_deploy_certificate_loop.sni|default(le_deploy2_ms_iis_sni) %} -SNI{% endif %}"
+      args:
+        chdir: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : MS IIS - remove certificates directory {{ ansible_env['TEMP'] }}\\letsencrypt"
-  win_file:
-    path: "{{ ansible_env['TEMP'] }}\\letsencrypt"
-    state: absent
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : MS IIS - remove certificates directory {{ ansible_env['TEMP'] }}\\letsencrypt"
+      win_file:
+        path: "{{ ansible_env['TEMP'] }}\\letsencrypt"
+        state: absent
+  tags:
+    - always

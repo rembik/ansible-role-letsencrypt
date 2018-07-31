@@ -14,9 +14,13 @@
     - "privkey.pem"
   register: le_certificate_loop_state
   delegate_to: 127.0.0.1
+  tags:
+    - always
 
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - load certificate deployment state from {{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}/.flag"
   include_vars: "{{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}/.flag"
+  tags:
+    - always
 
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - when certificate is signed/renewed:"
   block:
@@ -46,6 +50,8 @@
       set_fact:
         le_certificate_loop_date: "{{ ansible_date_time.date }}"
   when: le_certificate_loop_state.results[1].changed
+  tags:
+    - always
 
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - when certificate isn't signed/renewed:"
   block:
@@ -57,6 +63,8 @@
       set_fact:
         le_certificate_loop_date: "{{ le_certificate_date }}"
   when: le_certificate_loop_state.results[1].changed == false
+  tags:
+    - always
 
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - save certificate state into {{ le_deploy2_local_certs_dir }}/{{ le_certificate_loop.domain }}/.flag"
   template:
@@ -66,3 +74,5 @@
     group: root
     mode: 0600
   delegate_to: 127.0.0.1
+  tags:
+    - always

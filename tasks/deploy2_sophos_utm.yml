@@ -1,39 +1,43 @@
 ---
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - fail if sophos certificate's references are undefined"
-  fail:
-    msg: "Unable to get Sophos UTM certificate and intermediate certificate references from certificate variable 'ref' or/and 'ref_ca'!"
-  when: le_deploy_certificate_loop.ref is undefined or le_deploy_certificate_loop.ref == "" or le_deploy_certificate_loop.ref is none or le_deploy_certificate_loop.ref_ca is undefined or le_deploy_certificate_loop.ref_ca == "" or le_deploy_certificate_loop.ref_ca is none
+- name: "DEPLOY : SOPHOS UTM"
+  block:
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - fail if sophos certificate's references are undefined"
+      fail:
+        msg: "Unable to get Sophos UTM certificate and intermediate certificate references from certificate variable 'ref' or/and 'ref_ca'!"
+      when: le_deploy_certificate_loop.ref is undefined or le_deploy_certificate_loop.ref == "" or le_deploy_certificate_loop.ref is none or le_deploy_certificate_loop.ref_ca is undefined or le_deploy_certificate_loop.ref_ca == "" or le_deploy_certificate_loop.ref_ca is none
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - create certificates directory {{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}"
-  file:
-    path: "{{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}"
-    state: directory
-    mode: 0700
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - create certificates directory {{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}"
+      file:
+        path: "{{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}"
+        state: directory
+        mode: 0700
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - copy certificate files to {{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}"
-  copy:
-    src: "{{ le_deploy2_local_certs_dir }}/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
-    dest: "{{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
-    mode: 0400
-  with_items:
-    - "cert.pem"
-    - "chain.pem"
-    - "privkey.pem"
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - copy certificate files to {{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}"
+      copy:
+        src: "{{ le_deploy2_local_certs_dir }}/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
+        dest: "{{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
+        mode: 0400
+      with_items:
+        - "cert.pem"
+        - "chain.pem"
+        - "privkey.pem"
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - copy update script to {{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}/update-utm-certificate.pl"
-  copy:
-    src: "deploy2/sophos_utm/update-utm-certificate.pl"
-    dest: "{{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}/update-utm-certificate.pl"
-    mode: 0700
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - copy update script to {{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}/update-utm-certificate.pl"
+      copy:
+        src: "deploy2/sophos_utm/update-utm-certificate.pl"
+        dest: "{{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}/update-utm-certificate.pl"
+        mode: 0700
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - run update script"
-  become: true
-  shell: "./update-utm-certificate.pl {{ le_deploy_certificate_loop.ref }} cert.pem privkey.pem {{ le_deploy_certificate_loop.ref_ca }} chain.pem"
-  args:
-    chdir: "{{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}"
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - run update script"
+      become: true
+      shell: "./update-utm-certificate.pl {{ le_deploy_certificate_loop.ref }} cert.pem privkey.pem {{ le_deploy_certificate_loop.ref_ca }} chain.pem"
+      args:
+        chdir: "{{ ansible_user_dir }}/letsencrypt/{{ le_deploy_certificate_loop.domain }}"
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - remove certificates directory {{ ansible_user_dir }}/letsencrypt"
-  file:
-    path: "{{ ansible_user_dir }}/letsencrypt"
-    state: absent
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : SOPHOS UTM - remove certificates directory {{ ansible_user_dir }}/letsencrypt"
+      file:
+        path: "{{ ansible_user_dir }}/letsencrypt"
+        state: absent
+  tags:
+    - always

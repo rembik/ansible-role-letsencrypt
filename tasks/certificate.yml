@@ -5,6 +5,8 @@
   set_fact:
     le_certificate_loop_challenge_type: "{{ le_certificate_loop.challenge| default(le_dehydrated_challenge_type) }}"
     le_certificate_loop_dns_provider: "{{ le_certificate_loop.dns_provider | default(le_dns_provider) }}"
+  tags:
+    - always
 
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : when challenge type is 'dns-01':"
   block:
@@ -19,6 +21,8 @@
         - le_certificate_loop_dns_provider not in le_dns_lexicon_providers
   when:
     - le_certificate_loop_challenge_type == "dns-01"
+  tags:
+    - always
 
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : certificate with HTTP-01 webserver:"
   block:
@@ -28,6 +32,10 @@
       poll: 5
   when:
     - le_certificate_loop_challenge_type == "http-01"
+  tags:
+    - always
 
 - name: "CERTIFICATE {{ le_certificate_loop.domain }} : save certificate and specific deployment state on LOCALHOST:"
   include_tasks: "deploy2_localhost.yml"
+  tags:
+    - always

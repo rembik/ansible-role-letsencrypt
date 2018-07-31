@@ -1,66 +1,70 @@
 ---
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - fail if Spiceworks Monitor certificates keystore password is undefined"
-  fail:
-    msg: "Unable to get Spiceworks Monitor certificates keystore password from certificate variable 'keystore_password'!"
-  when: le_deploy_certificate_loop.keystore_password is undefined or le_deploy_certificate_loop.keystore_password == "" or le_deploy_certificate_loop.keystore_password is none
+- name: "DEPLOY : Spiceworks Monitor"
+  block:
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - fail if Spiceworks Monitor certificates keystore password is undefined"
+      fail:
+        msg: "Unable to get Spiceworks Monitor certificates keystore password from certificate variable 'keystore_password'!"
+      when: le_deploy_certificate_loop.keystore_password is undefined or le_deploy_certificate_loop.keystore_password == "" or le_deploy_certificate_loop.keystore_password is none
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - create certificates directory {{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
-  win_file:
-    path: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
-    state: directory
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - create certificates directory {{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
+      win_file:
+        path: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
+        state: directory
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - copy certificate files to {{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
-  win_copy:
-    src: "{{ le_deploy2_local_certs_dir }}/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
-    dest: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\{{ item }}"
-  with_items:
-    - "fullchain.pem"
-    - "privkey.pem"
-    - "pkcs12.pfx"
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - copy certificate files to {{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
+      win_copy:
+        src: "{{ le_deploy2_local_certs_dir }}/{{ le_deploy_certificate_loop.domain }}/{{ item }}"
+        dest: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\{{ item }}"
+      with_items:
+        - "fullchain.pem"
+        - "privkey.pem"
+        - "pkcs12.pfx"
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - ensure certificate files have windows line endings"
-  win_shell: "TYPE .\\{{ item }} | MORE /P > .\\win_{{ item }}"
-  args:
-    chdir: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
-    executable: cmd
-  with_items:
-    - "fullchain.pem"
-    - "privkey.pem"
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - ensure certificate files have windows line endings"
+      win_shell: "TYPE .\\{{ item }} | MORE /P > .\\win_{{ item }}"
+      args:
+        chdir: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
+        executable: cmd
+      with_items:
+        - "fullchain.pem"
+        - "privkey.pem"
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - create Java keystore"
-  win_shell: "keytool -importkeystore -srckeystore .\\pkcs12.pfx -srcstoretype pkcs12 -srcstorepass \"{{ le_dehydrated_pkcs12_password }}\" -destkeypass \"{{ le_dehydrated_pkcs12_password }}\" -srcalias \"let's encrypt {{ le_deploy_certificate_loop.domain }} ({{ le_certificate_date }})\" -destkeystore .\\monitoring.jks -deststoretype jks -deststorepass \"{{ le_deploy_certificate_loop.keystore_password }}\" -destkeypass \"{{ le_deploy_certificate_loop.keystore_password }}\" -destalias localhost"
-  args:
-    chdir: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
-    executable: cmd
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - create Java keystore"
+      win_shell: "keytool -importkeystore -srckeystore .\\pkcs12.pfx -srcstoretype pkcs12 -srcstorepass \"{{ le_dehydrated_pkcs12_password }}\" -destkeypass \"{{ le_dehydrated_pkcs12_password }}\" -srcalias \"let's encrypt {{ le_deploy_certificate_loop.domain }} ({{ le_certificate_date }})\" -destkeystore .\\monitoring.jks -deststoretype jks -deststorepass \"{{ le_deploy_certificate_loop.keystore_password }}\" -destkeypass \"{{ le_deploy_certificate_loop.keystore_password }}\" -destalias localhost"
+      args:
+        chdir: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}"
+        executable: cmd
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - copy certificates keystore to {{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\app\\conf\\monitoring.jks"
-  win_copy:
-    src: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\monitoring.jks"
-    dest: "{{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\app\\conf\\monitoring.jks"
-    remote_src: True
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - copy certificates keystore to {{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\app\\conf\\monitoring.jks"
+      win_copy:
+        src: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\monitoring.jks"
+        dest: "{{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\app\\conf\\monitoring.jks"
+        remote_src: True
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - copy certificates fullchain to {{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\wsproxy\\conf\\cert.pem"
-  win_copy:
-    src: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\win_fullchain.pem"
-    dest: "{{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\wsproxy\\conf\\cert.pem"
-    remote_src: True
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - copy certificates fullchain to {{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\wsproxy\\conf\\cert.pem"
+      win_copy:
+        src: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\win_fullchain.pem"
+        dest: "{{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\wsproxy\\conf\\cert.pem"
+        remote_src: True
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - copy certificates private key to {{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\wsproxy\\conf\\cert.pk"
-  win_copy:
-    src: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\win_privkey.pem"
-    dest: "{{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\wsproxy\\conf\\cert.pk"
-    remote_src: True
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - copy certificates private key to {{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\wsproxy\\conf\\cert.pk"
+      win_copy:
+        src: "{{ ansible_env['TEMP'] }}\\letsencrypt\\{{ le_deploy_certificate_loop.domain }}\\win_privkey.pem"
+        dest: "{{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\wsproxy\\conf\\cert.pk"
+        remote_src: True
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - restart services"
-  win_shell: ".\\{{ item }}"
-  args:
-    chdir: "{{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\Scripts\\Install"
-  with_items:
-    - "StopServices.ps1"
-    - "StartServices.ps1"
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - restart services"
+      win_shell: ".\\{{ item }}"
+      args:
+        chdir: "{{ le_deploy_certificate_loop.install_dir| default(le_deploy2_spiceworks_monitor_install_dir) }}\\Scripts\\Install"
+      with_items:
+        - "StopServices.ps1"
+        - "StartServices.ps1"
 
-- name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - remove certificates directory {{ ansible_env['TEMP'] }}\\letsencrypt"
-  win_file:
-    path: "{{ ansible_env['TEMP'] }}\\letsencrypt"
-    state: absent
+    - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : Spiceworks Monitor - remove certificates directory {{ ansible_env['TEMP'] }}\\letsencrypt"
+      win_file:
+        path: "{{ ansible_env['TEMP'] }}\\letsencrypt"
+        state: absent
+  tags:
+    - always
