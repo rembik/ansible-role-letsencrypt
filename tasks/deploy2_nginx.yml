@@ -20,12 +20,10 @@
         - "chain.pem"
         - "fullchain.pem"
         - "privkey.pem"
-      register: le_deploy_certificate_loop_state
 
     - name: "DEPLOY {{ le_deploy_certificate_loop.domain }} : NGINX - reload webserver configuration"
       become: true
       command: "{{ item }}"
       with_items: "{{ le_deploy2_nginx_reload_cmds }}"
-      when: le_deploy_certificate_loop_state.results[0].changed
   tags:
     - always
