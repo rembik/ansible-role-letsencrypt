@@ -9,7 +9,6 @@
 # --------------------------------------------------
 # for production switch from default acme-staging servers to acme-v01 servers
 #le_dehydrated_ca: "https://acme-v01.api.letsencrypt.org/directory"
-#le_dehydrated_ca_terms: "https://acme-v01.api.letsencrypt.org/terms"
 # default hook script for your dns-01 challenge
 #le_dehydrated_hook: "{{ le_dehydrated_hooks_dir }}/lexicon/{{ le_dns_lexicon_hook_file }}"
 # default contact email

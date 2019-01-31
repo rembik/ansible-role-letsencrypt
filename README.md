@@ -24,8 +24,7 @@ Following variables are associated with the setup process of the Let's Encrypt A
 
 #### dehydrated
 ```
-le_dehydrated_ca: "https://acme-staging.api.letsencrypt.org/directory"
-le_dehydrated_ca_terms: "https://acme-staging.api.letsencrypt.org/terms"
+le_dehydrated_ca: "https://acme-staging-v02.api.letsencrypt.org/directory"
 ```
 ***Overwrite!*** Switch certificate authority variables for production inventory from default *acme-staging* servers to *acme-v01* servers.
 

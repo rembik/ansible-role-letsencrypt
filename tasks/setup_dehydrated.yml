@@ -33,7 +33,6 @@
         no_extra_spaces: yes
       with_items:
         - { key: "CA", value: "{{ le_dehydrated_ca }}"}
-        - { key: "CA_TERMS", value: "{{ le_dehydrated_ca_terms }}"}
         - { key: "CHALLENGETYPE", value: "{{ le_dehydrated_challenge_type }}"}
         - { key: "BASEDIR", value: "{{ le_dehydrated_base_dir }}"}
         - { key: "CERTDIR", value: "{{ le_dehydrated_certs_dir }}"}
