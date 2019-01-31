@@ -23,9 +23,13 @@
         msg: "Unable to get Hetzner Robot password from certificate variable 'auth_password' or default variable 'le_dns_hetzner_auth_password'!"
       when: le_certificate_loop_auth_password_defined is skipped
 
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - set optional environement variables"
+      set_fact:
+        le_certificate_loop_dns_option_envs: "{{ (le_certificate_loop.option_envs| default(le_dns_hetzner_option_envs))| join(' ') }}"
+
     - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - sign/renew non-existant/changed/expiring certificate"
       shell: >
-        {{ (le_certificate_loop.option_envs| default(le_dns_hetzner_option_envs)| list).join(' ') }}
+        {{ le_certificate_loop_dns_option_envs }}
         {{ le_certificate_loop_dns_provider|upper }}_AUTH_USERNAME='{{ le_certificate_loop_dns_auth_username }}'
         {{ le_certificate_loop_dns_provider|upper }}_AUTH_PASSWORD='{{ le_certificate_loop_dns_auth_password }}'
         /opt/letsencrypt/dehydrated/dehydrated -c
