@@ -26,12 +26,7 @@
 
     - name: "SETUP Hetzner : install python requirements"
       pip:
-        requirements: "/opt/letsencrypt/dehydrated-hetzner-hook/requirements-python-2.txt"
-
-    - name: "SETUP Hetzner : create default.json (template) in /opt/letsencrypt/dehydrated-hetzner-hook/accounts"
-      template:
-        src: "setup/hetzner/default.j2"
-        dest: "/opt/letsencrypt/dehydrated-hetzner-hook/accounts/default.json"
+        requirements: "/opt/letsencrypt/dehydrated-hetzner-hook/requirements.txt"
 
     - name: "SETUP Hetzner : create sym link to {{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}"
       file:

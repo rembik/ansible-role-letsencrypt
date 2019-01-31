@@ -40,6 +40,7 @@
         - { key: "ACCOUNTDIR", value: "{{ le_dehydrated_accounts_dir }}"}
         - { key: "CONTACT_EMAIL", value: "{{ le_dehydrated_contact_email }}"}
         - { key: "HOOK", value: "{{ le_dehydrated_hook }}"}
+        - { key: "HOOK_CHAIN", value: "{{ le_dehydrated_hook_chain }}"}
       when:
         - item.value is defined
         - item.value != ""

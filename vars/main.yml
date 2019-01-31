@@ -31,7 +31,7 @@
 # NOTE: use same name as listed in le_dns_providers, lexicon excluded.
 #       Instead of lexicon use same name as in le_dns_lexicon_providers.
 #le_dns_provider: "cloudflare"
-# Hetzner Robot
+# Hetzner
 # ------------------------------------------------
 #le_dns_hetzner_auth_username:
 #le_dns_hetzner_auth_password:
@@ -45,5 +45,5 @@
 # certificate deployment
 # --------------------------------------------------
 # default webserver for certificate deployment
-# NOTE: use same name as listed in le_deploy2.webservers
+# NOTE: use same name as listed in le_deploy2_webservers
 #le_deploy2_webserver: "nginx"

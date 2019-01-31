@@ -10,7 +10,7 @@
     - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - fail if username undefined"
       fail:
         msg: "Unable to get Hetzner Robot username from certificate variable 'auth_username' or default variable 'le_dns_hetzner_auth_username'!"
-      when: le_certificate_loop_auth_username_defined|skipped
+      when: le_certificate_loop_auth_username_defined is skipped
 
     - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - set/check password"
       set_fact:
@@ -21,10 +21,16 @@
     - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - fail if password undefined"
       fail:
         msg: "Unable to get Hetzner Robot password from certificate variable 'auth_password' or default variable 'le_dns_hetzner_auth_password'!"
-      when: le_certificate_loop_auth_password_defined|skipped
+      when: le_certificate_loop_auth_password_defined is skipped
 
     - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - sign/renew non-existant/changed/expiring certificate"
-      shell: "{{ le_certificate_loop_dns_provider|upper }}_USERNAME='{{ le_certificate_loop_dns_auth_username }}' {{ le_certificate_loop_dns_provider|upper }}_PASSWORD='{{ le_certificate_loop_dns_auth_password }}' /opt/letsencrypt/dehydrated/dehydrated -c -d '{{ le_certificate_loop.domain }} {{ le_certificate_loop.altnames | default('') }}' -t 'dns-01' -k '{{ le_dehydrated_hooks_dir }}/hetzner/{{ le_dns_hetzner_hook_file }}'"
+      shell: >
+        {{ (le_certificate_loop.option_envs| default(le_dns_hetzner_option_envs)| list).join(' ') }}
+        {{ le_certificate_loop_dns_provider|upper }}_AUTH_USERNAME='{{ le_certificate_loop_dns_auth_username }}'
+        {{ le_certificate_loop_dns_provider|upper }}_AUTH_PASSWORD='{{ le_certificate_loop_dns_auth_password }}'
+        /opt/letsencrypt/dehydrated/dehydrated -c
+        -d '{{ le_certificate_loop.domain }} {{ le_certificate_loop.altnames | default('') }}'
+        -t 'dns-01' -k '{{ le_dehydrated_hooks_dir }}/hetzner/{{ le_dns_hetzner_hook_file }}'
       async: 1500
       poll: 15
   tags:

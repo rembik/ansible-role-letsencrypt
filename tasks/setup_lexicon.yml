@@ -21,20 +21,18 @@
         name: "{{ item }}"
         state: latest
       with_items:
-        - "requests[security]"
-        - "dns-lexicon"
-        - "dns-lexicon[route53]"
-        - "dns-lexicon[transip]"
+        - "dns-lexicon[full]"
 
     - name: "SETUP Lexicon : create lexicon hook directory {{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}"
       file:
         path: "{{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}"
         state: directory
 
-    - name: "SETUP Lexicon : copy hook script to {{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}/hook.sh"
-      copy:
-        src: "setup/lexicon/hook.sh"
+    - name: "SETUP Lexicon : download hook script to {{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}/hook.sh"
+      get_url:
+        url: https://raw.githubusercontent.com/AnalogJ/lexicon/master/examples/dehydrated.default.sh
         dest: "{{ le_dehydrated_hooks_dir }}/{{ le_setup_dns_loop }}/hook.sh"
         mode: 0755
+        force: yes
   tags:
     - always
