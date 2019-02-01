@@ -26,7 +26,8 @@ Following variables are associated with the setup process of the Let's Encrypt A
 ```
 le_dehydrated_ca: "https://acme-staging-v02.api.letsencrypt.org/directory"
 ```
-***Overwrite!*** Switch certificate authority variables for production inventory from default *acme-staging* servers to *acme-v01* servers.
+***Overwrite!*** Switch certificate authority variables for production inventory from default
+*acme-staging-v02* servers to *acme-v02* servers.
 
 ```
 le_dehydrated_hook: "{{ le_dehydrated_hooks_dir }}/lexicon/{{ le_dns_lexicon_hook_file }}"
@@ -49,6 +50,7 @@ le_dns_providers:
   - "lexicon"
   - "hetzner"
 le_dns_lexicon_providers:
+  - "aurora"
   - "cloudflare"
   - "cloudxns"
   - "digitalocean"
@@ -57,6 +59,7 @@ le_dns_lexicon_providers:
   - "dnspark"
   - "dnspod"
   - "easydns"
+  - "hetzner"
   - "luadns"
   - "namesilo"
   - "nsone"
@@ -66,6 +69,7 @@ le_dns_lexicon_providers:
   - "vultr"
   - "yandex"
   - "zonomi"
+  ...
 ```
 Supported dns providers are those provided by Lexicon (see [list]( https://github.com/AnalogJ/lexicon#providers)) and [Hetzner Robot](https://www.hetzner.de/us/hosting/domain/registrationrobot).
 
@@ -76,23 +80,20 @@ Choose default dns provider for dns-01 challenges. *Note:* use same name as list
 Instead of *lexicon* use same name as in `le_dns_lexicon_providers`.
 
 ```
-# Hetzner Robot
+# Hetzner
 le_dns_hetzner_auth_username:
 le_dns_hetzner_auth_password:
+le_dns_hetzner_option_envs:
+  - "HETZNER_AUTH_ACCOUNT=robot"
 
 # Lexicon
 le_dns_lexicon_auth_username:
 le_dns_lexicon_auth_password:
 le_dns_lexicon_auth_token:
+le_dns_lexicon_option_envs:
+  - "PROVIDER_ENV=''"
 ```
 ***Overwrite!*** Default credentials for chosen default dns provider (see [lexicon](https://github.com/AnalogJ/lexicon#authentication) and [dehydrated-hetzner-hook](https://github.com/rembik/dehydrated-hetzner-hook#configuration) docs).
-
-##### Hetzner Robot
-```
-le_dns_hetzner_language: "de"
-le_dns_hetzner_dns_servers: "\"213.239.242.238\", \"213.133.105.6\", \"193.47.99.3\""
-```
-If used, make sure to set your default Hetzner Robot user-interface language and customize your Hetzner Nameservers ([doc](https://github.com/rembik/dehydrated-hetzner-hook#configuration)).
 
 ### Certification
 Following dictionaries are required for the certification process and should be declared in the `host_vars` inventory file of Debian/Ubuntu Linux servers which will run the Let's Encrypt ACME client.

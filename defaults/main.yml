@@ -34,7 +34,6 @@ le_dns_hetzner_option_envs:
   - "HETZNER_AUTH_ACCOUNT='robot'"
 # Lexicon
 # ------------------------------------------------
-
 le_dns_lexicon_providers:
   - "aurora"
   - "cloudflare"

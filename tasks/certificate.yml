@@ -1,21 +1,22 @@
 ---
 # sign/renew non-existant/changed/expiring certificates
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : get challenge type and dns provider"
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : choose challenge type and provider"
   set_fact:
     le_certificate_loop_challenge_type: "{{ le_certificate_loop.challenge| default(le_dehydrated_challenge_type) }}"
     le_certificate_loop_dns_provider: "{{ le_certificate_loop.dns_provider | default(le_dns_provider) }}"
   tags:
     - always
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : when challenge type is 'dns-01':"
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : choose DNS-01 challenge hook:"
   block:
-    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DNS-01 - certificate with LEXICON hook:"
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DNS-01 - certificate with LEXICON DNS-01 hook:"
       include_tasks: "certificate_lexicon.yml"
       when:
         - le_certificate_loop_dns_provider in le_dns_lexicon_providers
 
-    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DNS-01 - certificate with {{ le_certificate_loop_dns_provider|upper }} hook:"
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DNS-01 - certificate with
+             {{ le_certificate_loop_dns_provider|upper }} DNS-01 hook:"
       include_tasks: "certificate_{{ le_certificate_loop_dns_provider | default(le_dns_provider) }}.yml"
       when:
         - le_certificate_loop_dns_provider not in le_dns_lexicon_providers
@@ -24,10 +25,13 @@
   tags:
     - always
 
-- name: "CERTIFICATE {{ le_certificate_loop.domain }} : certificate with HTTP-01 webserver:"
+- name: "CERTIFICATE {{ le_certificate_loop.domain }} : choose HTTP-01 challenge webserver:"
   block:
-    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HTTP-01 - sign/renew non-existant/changed/expiring certificate"
-      shell: "/opt/letsencrypt/dehydrated/dehydrated -c -d '{{ le_certificate_loop.domain }} {{ le_certificate_loop.altnames | default('') }}' -t 'http-01'"
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HTTP-01 - sign/renew certificate"
+      shell: >
+        /opt/letsencrypt/dehydrated/dehydrated -c
+        -d '{{ le_certificate_loop.domain }} {{ le_certificate_loop.altnames| default('') }}'
+        -t 'http-01'
       async: 600
       poll: 5
   when:

@@ -1,37 +1,25 @@
 ---
 - name: "CERTIFICATE : HETZNER DNS-01"
   block:
-    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - set/check username"
-      set_fact:
-        le_certificate_loop_dns_auth_username: "{{ le_certificate_loop.auth_username| default(le_dns_hetzner_auth_username) }}"
-      when: (le_certificate_loop.auth_username is defined) or (le_dns_hetzner_auth_username is defined and le_dns_hetzner_auth_username != "" and le_dns_hetzner_auth_username is not none)
-      register: le_certificate_loop_auth_username_defined
-
-    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - fail if username undefined"
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - ensure username is defined"
       fail:
-        msg: "Unable to get Hetzner Robot username from certificate variable 'auth_username' or default variable 'le_dns_hetzner_auth_username'!"
-      when: le_certificate_loop_auth_username_defined is skipped
+        msg: "Unable to get Hetzner Robot username from certificate variable 'auth_username' or default
+              variable 'le_dns_hetzner_auth_username'!"
+      when: (le_certificate_loop.auth_username| default(le_dns_hetzner_auth_username, True)| default('', True)) == ""
 
-    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - set/check password"
-      set_fact:
-        le_certificate_loop_dns_auth_password: "{{ le_certificate_loop.auth_password| default(le_dns_hetzner_auth_password) }}"
-      when: (le_certificate_loop.auth_password is defined) or (le_dns_hetzner_auth_password is defined and le_dns_hetzner_auth_password != "" and le_dns_hetzner_auth_password is not none)
-      register: le_certificate_loop_auth_password_defined
-
-    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - fail if password undefined"
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - ensure password is defined"
       fail:
-        msg: "Unable to get Hetzner Robot password from certificate variable 'auth_password' or default variable 'le_dns_hetzner_auth_password'!"
-      when: le_certificate_loop_auth_password_defined is skipped
+        msg: "Unable to get Hetzner Robot password from certificate variable 'auth_password' or default
+              variable 'le_dns_hetzner_auth_password'!"
+      when: (le_certificate_loop.auth_password| default(le_dns_hetzner_auth_password, True)| default('', True)) == ""
 
-    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - set optional environement variables"
-      set_fact:
-        le_certificate_loop_dns_option_envs: "{{ (le_certificate_loop.option_envs| default(le_dns_hetzner_option_envs))| join(' ') }}"
-
-    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - sign/renew non-existant/changed/expiring certificate"
+    - name: "CERTIFICATE {{ le_certificate_loop.domain }} : HETZNER DNS-01 - sign/renew certificate"
       shell: >
-        {{ le_certificate_loop_dns_option_envs }}
-        {{ le_certificate_loop_dns_provider|upper }}_AUTH_USERNAME='{{ le_certificate_loop_dns_auth_username }}'
-        {{ le_certificate_loop_dns_provider|upper }}_AUTH_PASSWORD='{{ le_certificate_loop_dns_auth_password }}'
+        {{ (le_certificate_loop.option_envs| default(le_dns_hetzner_option_envs))| join(' ') }}
+        {{ le_certificate_loop_dns_provider|upper }}_AUTH_USERNAME='{{ le_certificate_loop.auth_username|
+        default(le_dns_hetzner_auth_username, True) }}'
+        {{ le_certificate_loop_dns_provider|upper }}_AUTH_PASSWORD='{{ le_certificate_loop.auth_password|
+        default(le_dns_hetzner_auth_password, True) }}'
         /opt/letsencrypt/dehydrated/dehydrated -c
         -d '{{ le_certificate_loop.domain }} {{ le_certificate_loop.altnames | default('') }}'
         -t 'dns-01' -k '{{ le_dehydrated_hooks_dir }}/hetzner/{{ le_dns_hetzner_hook_file }}'
