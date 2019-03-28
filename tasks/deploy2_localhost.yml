@@ -39,7 +39,7 @@
       with_items:
         - "pkcs12.pfx"
       when:
-        - le_certificate_loop_generate_pkcs12|success
+        - le_certificate_loop_generate_pkcs12 is succeeded
       delegate_to: 127.0.0.1
 
     - name: "CERTIFICATE {{ le_certificate_loop.domain }} : DEPLOY LOCAL - set certificate deployment state to 'deploy'"
