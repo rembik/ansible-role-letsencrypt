@@ -2,7 +2,6 @@
 
 - name: "++++++++++ install and config dehydrated and all challenge hooks ++++++++++"
   include_tasks: setup.yml
-  become: true
   when:
     - le_certificates is defined
     - le_deploy == false
@@ -12,7 +11,6 @@
 
 - name: "++++++++++ sign/renew non-existant/changed/expiring certificates ++++++++++"
   include_tasks: certificate.yml
-  become: true
   when:
     - le_certificates is defined
     - le_deploy == false
