@@ -89,7 +89,7 @@ le_dns_lexicon_auth_username:
 le_dns_lexicon_auth_password:
 le_dns_lexicon_auth_token:
 le_dns_lexicon_option_envs:
-  - "PROVIDER_ENV=''"
+  - "PROVIDER_ENV='None'"
 
 # dehydrated
 # --------------------------------------------------

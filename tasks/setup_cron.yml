@@ -23,7 +23,7 @@
         state: directory
       delegate_to: 127.0.0.1
       run_once: true
-    - name: "letsencrypt : SETUP cron : [{{ le_setup_cron_loop }}] - config cron environment"
+    - name: "letsencrypt : SETUP cron : [{{ le_setup_cron_loop }}] - config dynamic cron environment"
       template:
         src: "roles/letsencrypt/templates/setup/localhost/cron_env.j2"
         dest: "{{ playbook_dir }}/.cron/letsencrypt_{{ le_setup_cron_loop }}"
@@ -31,11 +31,19 @@
         group: root
         mode: 0744
       delegate_to: 127.0.0.1
+    - name: "letsencrypt : SETUP cron : [{{ le_setup_cron_loop }}] - config static cron environment"
+      cron:
+        name: PATH
+        env: yes
+        user: root
+        cron_file: letsencrypt
+        job: /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/sbin
+      delegate_to: 127.0.0.1
     - name: "letsencrypt : SETUP cron : [{{ le_setup_cron_loop }}] - config cronjob"
       cron:
         name: "letsencrypt [{{ le_setup_cron_loop }}]"
-        minute: 0
-        hour: 22
+        minute: "0"
+        hour: "22"
         user: root
         cron_file: letsencrypt
         job: ". {{ playbook_dir }}/.cron/letsencrypt_{{ le_setup_cron_loop }}; /usr/bin/ansible-playbook {{ playbook_dir }}/{{ le_cron_playbook_filename }} -i {{ inventory_file }} --vault-password-file {{ le_cron_vault_password_file }} -l {{ le_setup_cron_loop }} -t certificate,deploy > /dev/null 2>&1"

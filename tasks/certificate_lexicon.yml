@@ -31,5 +31,6 @@
         -t 'dns-01' -k '{{ le_dehydrated_hooks_dir }}/lexicon/{{ le_dns_lexicon_hook_file }}'
       async: 1500
       poll: 15
+      no_log: yes
   tags:
     - always

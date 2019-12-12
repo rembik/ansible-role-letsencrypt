@@ -108,6 +108,7 @@ le_certificate:
         auth_username:                          # optional, overwrites default for specific domain
         auth_password:                          # optional, overwrites default for specific domain
         auth_token:                             # optional, overwrites default for specific domain
+        option_envs:                            # optional, overwrites default for specific domain
 le_certificates:                                # required dictionary list for certification process in role  
     - "{{ le_certificate.example_com }}"
 ```
